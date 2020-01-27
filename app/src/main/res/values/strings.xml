@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">NewYorkList</string>
+    <string name="imageViewDescription">Image</string>
+    <string name="name">Name</string>
+    <string name="detailText">Detail Text</string>
+    <string name="date">Date</string>
+    <string name="goBack">НАЗАД</string>
+    <string name="seeMore">ПОДРОБНЕЕ</string>
 </resources>
