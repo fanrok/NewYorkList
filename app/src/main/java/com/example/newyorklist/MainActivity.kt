@@ -8,7 +8,11 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.*
+import com.example.newyorklist.data.Review
+
 import java.util.*
+import kotlin.coroutines.CoroutineContext
 
 
 /*
@@ -39,11 +43,22 @@ secret: HTfeigAHETiypjDE
 api-id: efb5ab20-6535-45da-92d3-694955cef14c
 https://api.nytimes.com/svc/movies/v2/reviews/search.json?query=godfather&api-key=fzrw2QrRVsQcUEXhTQCz2qYWFjPV8XAs
  */
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), CoroutineScope {
+
+    private var job: Job = Job()
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + job
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job.cancel()
+    }
 
     var recyclerView: RecyclerView? = null
     var recyclerViewAdapter: RecyclerViewAdapter? = null
-    var rowsArrayList: ArrayList<String?> = ArrayList()
+//    var rowsArrayList: ArrayList<String?> = ArrayList()
+    var rowsArrayList = mutableListOf<Review>()
 
     var isLoading = false
 
@@ -51,16 +66,21 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         recyclerView = findViewById(R.id.recyclerView)
-        populateData()
+
+        launch {
+            populateData(0)
+        }
         initAdapter()
         initScrollListener()
     }
 
-    private fun populateData() {
-        var i = 0
-        while (i < 10) {
-            rowsArrayList.add("Item $i")
-            i++
+    suspend fun populateData(i: Int) = coroutineScope {
+        launch {
+            var j=i
+            while (j < i+10) {
+                rowsArrayList.add(Review("Item $j", "date", "text", "img"))
+                j++
+            }
         }
     }
 
@@ -90,26 +110,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadMore() {
-        rowsArrayList.add(null)
+        rowsArrayList.add(Review())
 
         recyclerView!!.post {
             // There is no need to use notifyDataSetChanged()
             recyclerViewAdapter!!.notifyItemInserted(rowsArrayList.size - 1)
         }
 
-//        recyclerViewAdapter!!.notifyItemInserted(rowsArrayList.size - 1)
+        recyclerViewAdapter!!.notifyItemInserted(rowsArrayList.size - 1)
         val handler = Handler()
         handler.postDelayed(Runnable {
             rowsArrayList.removeAt(rowsArrayList.size - 1)
             val scrollPosition: Int = rowsArrayList.size
             recyclerViewAdapter!!.notifyItemRemoved(scrollPosition)
-            var currentSize = scrollPosition
-            val nextLimit = currentSize + 10
-            while (currentSize - 1 < nextLimit) {
-                rowsArrayList.add("Item $currentSize")
-                currentSize++
+            launch {
+                populateData(scrollPosition)
+                recyclerView!!.post {
+                    recyclerViewAdapter!!.notifyDataSetChanged()
+                }
             }
-            recyclerViewAdapter!!.notifyDataSetChanged()
+
             isLoading = false
         }, 2000)
     }

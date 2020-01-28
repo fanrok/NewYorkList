@@ -7,9 +7,10 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.example.newyorklist.data.Review
 
 
-class RecyclerViewAdapter(var mItemList:  ArrayList<String?>?) :
+class RecyclerViewAdapter(var mItemList:  List<Review>) :
     RecyclerView.Adapter<ViewHolder>() {
     private val VIEW_TYPE_ITEM = 0
     private val VIEW_TYPE_LOADING = 1
@@ -34,7 +35,7 @@ class RecyclerViewAdapter(var mItemList:  ArrayList<String?>?) :
     }
 
     override fun getItemCount(): Int {
-        return if (mItemList == null) 0 else mItemList!!.size
+        return mItemList.size
     }
 
     /**
@@ -44,7 +45,7 @@ class RecyclerViewAdapter(var mItemList:  ArrayList<String?>?) :
      * @return
      */
     override fun getItemViewType(position: Int): Int {
-        return if (mItemList!![position] == null) VIEW_TYPE_LOADING else VIEW_TYPE_ITEM
+        return if (mItemList[position].Name == null) VIEW_TYPE_LOADING else VIEW_TYPE_ITEM
     }
 
     private inner class ItemViewHolder(itemView: View) :
@@ -76,7 +77,7 @@ class RecyclerViewAdapter(var mItemList:  ArrayList<String?>?) :
         position: Int
     ) {
         val item = mItemList!![position]
-        viewHolder.tvItem.text = item
+        viewHolder.tvItem.text = item.Name
     }
 
 }
