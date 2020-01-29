@@ -62,4 +62,7 @@ class LoadDataFromUrl {
         this.query = query
     }
 
+    fun getHasMore(): Boolean{
+        return this.haveMoreReviews
+    }
 }

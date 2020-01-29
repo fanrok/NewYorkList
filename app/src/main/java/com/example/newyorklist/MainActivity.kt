@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
 
     var recyclerView: RecyclerView? = null
     var recyclerViewAdapter: RecyclerViewAdapter? = null
-//    var rowsArrayList: ArrayList<String?> = ArrayList()
+    //    var rowsArrayList: ArrayList<String?> = ArrayList()
     var rowsArrayList = mutableListOf<Review>()
     val data = LoadDataFromUrl()
     var isLoading = false
@@ -98,8 +98,8 @@ class MainActivity : AppCompatActivity() {
 
     suspend fun populateData(i: Int) = coroutineScope {
         ioScope.launch {
-            var j=i
-            while (j < i+10) {
+            var j = i
+            while (j < i + 10) {
                 rowsArrayList.add(Review("Item $j", "date", "text", "img"))
                 j++
             }
@@ -119,9 +119,9 @@ class MainActivity : AppCompatActivity() {
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                val linearLayoutManager =
-                    recyclerView.layoutManager as LinearLayoutManager?
-                if (!isLoading) {
+                if (!isLoading && data.getHasMore()) {
+                    val linearLayoutManager =
+                        recyclerView.layoutManager as LinearLayoutManager?
                     if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == rowsArrayList.size - 1) { //bottom of list!
                         loadMore()
                         isLoading = true
@@ -132,30 +132,37 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadMore() {
+        val currentSize = rowsArrayList.size
         rowsArrayList.add(Review())
+        recyclerViewAdapter!!.notifyItemRangeInserted(currentSize, rowsArrayList.size)
+//        recyclerView!!.post {
+//            // There is no need to use notifyDataSetChanged()
+//            recyclerViewAdapter!!.notifyItemInserted(rowsArrayList.size - 1)
+//        }
 
-        recyclerView!!.post {
-            // There is no need to use notifyDataSetChanged()
-            recyclerViewAdapter!!.notifyItemInserted(rowsArrayList.size - 1)
-        }
-
-        recyclerViewAdapter!!.notifyItemInserted(rowsArrayList.size - 1)
-        val handler = Handler()
-        handler.postDelayed(Runnable {
-            rowsArrayList.removeAt(rowsArrayList.size - 1)
-            val scrollPosition: Int = rowsArrayList.size
-            recyclerViewAdapter!!.notifyItemRemoved(scrollPosition)
-            ioScope.launch {
-                populateData(scrollPosition)
-                uiScope.launch {
-                    recyclerView!!.post {
-                        recyclerViewAdapter!!.notifyDataSetChanged()
-                    }
+//        recyclerViewAdapter!!.notifyItemRangeInserted(0, rowsArrayList.size - 1)
+//        val handler = Handler()
+        rowsArrayList.removeAt(rowsArrayList.size - 1)
+        val scrollPosition: Int = rowsArrayList.size
+//        recyclerViewAdapter!!.notifyItemRemoved(scrollPosition)
+        ioScope.launch {
+//            populateData(scrollPosition)
+            val result = data.loadData()
+            val reviews = addReviewsInDB(db, result.results, rowsArrayList)
+            uiScope.launch {
+                recyclerView!!.post {
+                    recyclerViewAdapter!!.notifyItemRangeRemoved(currentSize-1, currentSize)
+                    rowsArrayList.plusAssign(reviews)
+//                    recyclerViewAdapter!!.notifyDataSetChanged()
+                    //tell the recycler view that all the old items are gone
+                    recyclerViewAdapter!!.notifyItemRangeRemoved(currentSize-1, currentSize)
+                    //tell the recycler view how many new items we added
+                    recyclerViewAdapter!!.notifyItemRangeInserted(currentSize, rowsArrayList.size)
                 }
             }
+        }
 
-            isLoading = false
-        }, 1)
+        isLoading = false
     }
 
     fun addReviewsInDB(

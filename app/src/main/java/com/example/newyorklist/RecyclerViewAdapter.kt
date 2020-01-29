@@ -3,14 +3,16 @@ package com.example.newyorklist
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.newyorklist.data.Review
+import com.squareup.picasso.Picasso
 
 
-class RecyclerViewAdapter(var mItemList:  List<Review>) :
+class RecyclerViewAdapter(var mItemList: List<Review>) :
     RecyclerView.Adapter<ViewHolder>() {
     private val VIEW_TYPE_ITEM = 0
     private val VIEW_TYPE_LOADING = 1
@@ -50,10 +52,12 @@ class RecyclerViewAdapter(var mItemList:  List<Review>) :
 
     private inner class ItemViewHolder(itemView: View) :
         ViewHolder(itemView) {
-        var tvItem: TextView
+        var tvItem: TextView? = null
+        var imageView: ImageView? = null
 
         init {
             tvItem = itemView.findViewById(R.id.tvItem)
+            imageView = itemView.findViewById(R.id.imageView)
         }
     }
 
@@ -77,7 +81,11 @@ class RecyclerViewAdapter(var mItemList:  List<Review>) :
         position: Int
     ) {
         val item = mItemList!![position]
-        viewHolder.tvItem.text = item.Name
+        viewHolder.tvItem?.text = item.Name
+        if (!item.Img.isNullOrEmpty()) {
+            Picasso.get().load(item.Img).into(viewHolder.imageView)
+
+        }
     }
 
 }
