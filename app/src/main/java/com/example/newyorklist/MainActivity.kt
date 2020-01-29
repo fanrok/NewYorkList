@@ -47,17 +47,12 @@ secret: HTfeigAHETiypjDE
 api-id: efb5ab20-6535-45da-92d3-694955cef14c
 https://api.nytimes.com/svc/movies/v2/reviews/search.json?query=godfather&api-key=fzrw2QrRVsQcUEXhTQCz2qYWFjPV8XAs
  */
-class MainActivity : AppCompatActivity(), CoroutineScope {
+class MainActivity : AppCompatActivity() {
 
     private var job: Job = Job()
 
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main + job
-
-    override fun onDestroy() {
-        super.onDestroy()
-        job.cancel()
-    }
+    val ioScope = CoroutineScope(Dispatchers.IO + job)
+    val uiScope = CoroutineScope(Dispatchers.Main + job)
 
     var recyclerView: RecyclerView? = null
     var recyclerViewAdapter: RecyclerViewAdapter? = null
@@ -78,13 +73,16 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
 
                 data.setQuery(query)
                 rowsArrayList.clear()
-                launch {
+                ioScope.launch {
                     val result = data.loadData()
                     val reviews = addReviewsInDB(db, result.results, rowsArrayList)
-                    rowsArrayList = reviews
+                    uiScope.launch {
+                        rowsArrayList = reviews
 //                    populateData(0)
-                    initAdapter()
-                    initScrollListener()
+                        initAdapter()
+                        initScrollListener()
+                    }
+
                 }
 
                 return false
@@ -99,7 +97,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
     }
 
     suspend fun populateData(i: Int) = coroutineScope {
-        launch {
+        ioScope.launch {
             var j=i
             while (j < i+10) {
                 rowsArrayList.add(Review("Item $j", "date", "text", "img"))
@@ -147,15 +145,17 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
             rowsArrayList.removeAt(rowsArrayList.size - 1)
             val scrollPosition: Int = rowsArrayList.size
             recyclerViewAdapter!!.notifyItemRemoved(scrollPosition)
-            launch {
+            ioScope.launch {
                 populateData(scrollPosition)
-                recyclerView!!.post {
-                    recyclerViewAdapter!!.notifyDataSetChanged()
+                uiScope.launch {
+                    recyclerView!!.post {
+                        recyclerViewAdapter!!.notifyDataSetChanged()
+                    }
                 }
             }
 
             isLoading = false
-        }, 2000)
+        }, 1)
     }
 
     fun addReviewsInDB(
