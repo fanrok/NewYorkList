@@ -73,6 +73,13 @@ class MainActivity : AppCompatActivity() {
 
                 data.setQuery(query)
                 rowsArrayList.clear()
+
+                rowsArrayList.add(Review())
+                recyclerView!!.post {
+                    recyclerViewAdapter!!.notifyItemRangeInserted(0, rowsArrayList.size)
+                }
+                rowsArrayList.removeAt(rowsArrayList.size - 1)
+
                 ioScope.launch {
                     val result = data.loadData()
                     val reviews = addReviewsInDB(db, result.results, rowsArrayList)
@@ -134,7 +141,9 @@ class MainActivity : AppCompatActivity() {
     private fun loadMore() {
         val currentSize = rowsArrayList.size
         rowsArrayList.add(Review())
-        recyclerViewAdapter!!.notifyItemRangeInserted(currentSize, rowsArrayList.size)
+        recyclerView!!.post {
+            recyclerViewAdapter!!.notifyItemRangeInserted(currentSize, rowsArrayList.size)
+        }
 //        recyclerView!!.post {
 //            // There is no need to use notifyDataSetChanged()
 //            recyclerViewAdapter!!.notifyItemInserted(rowsArrayList.size - 1)
@@ -144,18 +153,20 @@ class MainActivity : AppCompatActivity() {
 //        val handler = Handler()
         rowsArrayList.removeAt(rowsArrayList.size - 1)
         val scrollPosition: Int = rowsArrayList.size
-//        recyclerViewAdapter!!.notifyItemRemoved(scrollPosition)
+//        recyclerView!!.post {
+//            recyclerViewAdapter!!.notifyItemRangeRemoved(scrollPosition, currentSize)
+//        }
         ioScope.launch {
-//            populateData(scrollPosition)
+            //            populateData(scrollPosition)
             val result = data.loadData()
             val reviews = addReviewsInDB(db, result.results, rowsArrayList)
             uiScope.launch {
                 recyclerView!!.post {
-                    recyclerViewAdapter!!.notifyItemRangeRemoved(currentSize-1, currentSize)
-                    rowsArrayList.plusAssign(reviews)
+                    recyclerViewAdapter!!.notifyItemRangeRemoved(scrollPosition, currentSize)
+                    rowsArrayList.addAll(reviews)
 //                    recyclerViewAdapter!!.notifyDataSetChanged()
                     //tell the recycler view that all the old items are gone
-                    recyclerViewAdapter!!.notifyItemRangeRemoved(currentSize-1, currentSize)
+                    recyclerViewAdapter!!.notifyItemRangeRemoved(currentSize - 1, currentSize)
                     //tell the recycler view how many new items we added
                     recyclerViewAdapter!!.notifyItemRangeInserted(currentSize, rowsArrayList.size)
                 }
