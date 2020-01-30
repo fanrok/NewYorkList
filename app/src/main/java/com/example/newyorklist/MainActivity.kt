@@ -199,10 +199,16 @@ class MainActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         Log.i("INFO ", "onSaveInstanceState")
+        val search: SearchView = findViewById(R.id.search)
+        val searchText = search.query
+        outState.putCharSequence("searchText", searchText)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         Log.i("INFO ", "onRestoreInstanceState")
+        val userText = savedInstanceState.getCharSequence("searchText")
+        val search: SearchView = findViewById(R.id.search)
+        search.setQuery(userText, false)
     }
 }

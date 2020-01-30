@@ -1,11 +1,14 @@
 package com.example.newyorklist
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.newyorklist.data.Review
@@ -54,10 +57,12 @@ class RecyclerViewAdapter(var mItemList: List<Review>) :
         ViewHolder(itemView) {
         var tvItem: TextView? = null
         var imageView: ImageView? = null
+        var seeMore: Button? = null
 
         init {
             tvItem = itemView.findViewById(R.id.tvItem)
             imageView = itemView.findViewById(R.id.imageView)
+            seeMore = itemView.findViewById(R.id.seeMore)
         }
     }
 
@@ -80,11 +85,15 @@ class RecyclerViewAdapter(var mItemList: List<Review>) :
         viewHolder: ItemViewHolder,
         position: Int
     ) {
-        val item = mItemList!![position]
+        val item = mItemList[position]
         viewHolder.tvItem?.text = item.Name
         if (!item.Img.isNullOrEmpty()) {
             Picasso.get().load(item.Img).into(viewHolder.imageView)
-
+        }
+        viewHolder.seeMore?.setOnClickListener {
+            val intent = Intent(it.context, DetailActivity::class.java)
+            intent.putExtra("id", item.Id)
+            ContextCompat.startActivity(it.context, intent, null)
         }
     }
 
