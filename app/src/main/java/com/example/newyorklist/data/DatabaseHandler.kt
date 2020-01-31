@@ -123,4 +123,48 @@ class DatabaseHandler(
         cursor.close()
         return out
     }
+
+    fun addReviewsInDB(
+        db: DatabaseHandler,
+        reviews: List<NewYorkJson.Result>,
+        out: MutableList<Review>
+    ): MutableList<Review> {
+        for (review in reviews) {
+            if (!db.searchReviewByName(review.display_title)) {
+                if (review.multimedia != null) {
+                    out.add(
+                        Review(
+                            db.addReview(
+                                review.display_title,
+                                review.publication_date,
+                                review.summary_short,
+                                review.multimedia.src
+                            ),
+                            review.display_title,
+                            review.publication_date,
+                            review.summary_short,
+                            review.multimedia.src
+                        )
+                    )
+                } else {
+                    out.add(
+                        Review(
+                            db.addReview(
+                                review.display_title,
+                                review.publication_date,
+                                review.summary_short
+                            ),
+                            review.display_title,
+                            review.publication_date,
+                            review.summary_short,
+                            ""
+                        )
+                    )
+                }
+            } else {
+                out.add(db.getReviewByName(review.display_title))
+            }
+        }
+        return out
+    }
 }

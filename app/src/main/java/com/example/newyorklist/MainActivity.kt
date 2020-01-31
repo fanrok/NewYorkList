@@ -9,10 +9,7 @@ import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.newyorklist.data.DatabaseHandler
-import com.example.newyorklist.data.LoadDataFromUrl
-import com.example.newyorklist.data.NewYorkJson
-import com.example.newyorklist.data.Review
+import com.example.newyorklist.data.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -56,8 +53,8 @@ class MainActivity : AppCompatActivity() {
 
     var recyclerView: RecyclerView? = null
     var recyclerViewAdapter: RecyclerViewAdapter? = null
-    var rowsArrayList = mutableListOf<Review>()
-    val data = LoadDataFromUrl()
+    var listReviews = StateSave.reviews
+    val data = StateSave.api
     var isLoading = false
 
     val db = DatabaseHandler(this)
@@ -66,43 +63,32 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         recyclerView = findViewById(R.id.recyclerView)
+        initAdapter()
+        initScrollListener()
+        if (listReviews.size > 0) {//значение больше нуля значит мы восстановили стейт. промотаем список до нужной позиции (smoothScrollToPosition не работает)
+            recyclerView?.scrollToPosition(StateSave.scrollPosition)
+        }
         val search: SearchView = findViewById(R.id.search)
+
         search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-
                 data.setQuery(query)
-                rowsArrayList.clear()
-                rowsArrayList.add(Review())
-                recyclerViewAdapter ?: run {
-                    initAdapter()
-                    initScrollListener()
-                }
-
-                ioScope.launch {
-                    val result = data.loadData()
-                    rowsArrayList.clear()
-                    val reviews = addReviewsInDB(db, result.results, rowsArrayList)
-                    uiScope.launch {
-
-                        rowsArrayList = reviews
-                        recyclerView?.post {
-                            recyclerViewAdapter?.notifyDataSetChanged()
-                        }
-                    }
-
-                }
-
+                listReviews.clear()
+                loadMore(true)
                 return false
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
+//                data.setQuery(newText)
+//                listReviews.clear()
+//                loadMore(true)
                 return false
             }
         })
     }
 
     private fun initAdapter() {
-        recyclerViewAdapter = RecyclerViewAdapter(rowsArrayList)
+        recyclerViewAdapter = RecyclerViewAdapter(listReviews)
         recyclerView!!.adapter = recyclerViewAdapter
     }
 
@@ -114,11 +100,12 @@ class MainActivity : AppCompatActivity() {
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
+                val linearLayoutManager = recyclerView.layoutManager as LinearLayoutManager
+                StateSave.scrollPosition =
+                    linearLayoutManager.findFirstCompletelyVisibleItemPosition()
                 if (!isLoading && data.getHasMore()) {
-                    val linearLayoutManager =
-                        recyclerView.layoutManager as LinearLayoutManager?
-                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == rowsArrayList.size - 1) { //bottom of list!
-                        loadMore()
+                    if (linearLayoutManager.findLastCompletelyVisibleItemPosition() == listReviews.size - 1 && listReviews.size > 1) {
+                        loadMore(false)
                         isLoading = true
                     }
                 }
@@ -126,24 +113,33 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun loadMore() {
-        rowsArrayList.add(Review())
-        recyclerView?.post {
-            recyclerViewAdapter?.notifyItemInserted(rowsArrayList.size)
+    private fun loadMore(newList: Boolean = false) {
+        if (newList) {
+            recyclerView?.post {
+                recyclerViewAdapter?.notifyDataSetChanged()
+            }
         }
-        val scrollPosition: Int = rowsArrayList.size
+        listReviews.add(Review())
+        recyclerView?.post {
+            recyclerViewAdapter?.notifyItemInserted(listReviews.size)
+        }
+        val scrollPosition: Int = listReviews.size
         val handler = Handler()
         handler.postDelayed({
             ioScope.launch {
                 val result = data.loadData()
-                rowsArrayList.removeAt(rowsArrayList.size - 1)
-                val reviews = addReviewsInDB(db, result.results, rowsArrayList)
+                if (newList) {
+                    listReviews.clear()
+                } else {
+                    listReviews.removeAt(listReviews.size - 1)
+                }
+                val reviews = db.addReviewsInDB(db, result.results, listReviews)
                 uiScope.launch {
-                    rowsArrayList = reviews
+                    listReviews = reviews
                     recyclerView?.post {
                         recyclerViewAdapter?.notifyItemRangeChanged(
-                            scrollPosition-1,
-                            rowsArrayList.size-scrollPosition
+                            scrollPosition - 1,
+                            listReviews.size - scrollPosition
                         )
                     }
                     isLoading = false
@@ -152,63 +148,29 @@ class MainActivity : AppCompatActivity() {
         }, 0)
     }
 
-    fun addReviewsInDB(
-        db: DatabaseHandler,
-        reviews: List<NewYorkJson.Result>,
-        out: MutableList<Review>
-    ): MutableList<Review> {
-        for (review in reviews) {
-            if (!db.searchReviewByName(review.display_title)) {
-                if (review.multimedia != null) {
-                    out.add(
-                        Review(
-                            db.addReview(
-                                review.display_title,
-                                review.publication_date,
-                                review.summary_short,
-                                review.multimedia.src
-                            ),
-                            review.display_title,
-                            review.publication_date,
-                            review.summary_short,
-                            review.multimedia.src
-                        )
-                    )
-                } else {
-                    out.add(
-                        Review(
-                            db.addReview(
-                                review.display_title,
-                                review.publication_date,
-                                review.summary_short
-                            ),
-                            review.display_title,
-                            review.publication_date,
-                            review.summary_short,
-                            ""
-                        )
-                    )
-                }
-            } else {
-                out.add(db.getReviewByName(review.display_title))
-            }
-        }
-        return out
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        Log.i("INFO ", "onSaveInstanceState")
         val search: SearchView = findViewById(R.id.search)
         val searchText = search.query
         outState.putCharSequence("searchText", searchText)
+        StateSave.reviews = listReviews
+
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {//я не понимаю почему, но при поворотах экрана и при изменении экрана этот метод просто не вызывается
         super.onRestoreInstanceState(savedInstanceState)
-        Log.i("INFO ", "onRestoreInstanceState")
         val userText = savedInstanceState.getCharSequence("searchText")
         val search: SearchView = findViewById(R.id.search)
         search.setQuery(userText, false)
+//        listReviews = StateSave.reviews
+    }
+
+    override fun onPause() {
+        super.onPause()
+        StateSave.reviews = listReviews
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
 }

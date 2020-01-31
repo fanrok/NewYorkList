@@ -19,14 +19,12 @@ class DetailActivity : AppCompatActivity() {
         val db = DatabaseHandler(this)
         val id = getIntent().getExtras()!!.getLong("id")
         val review = db.getReviewById(id.toInt())
-        Log.d("NAME", review.Name)
         val date = findViewById<TextView>(R.id.date)
         val name = findViewById<TextView>(R.id.name)
         val text = findViewById<TextView>(R.id.detailText)
         val btn = findViewById<Button>(R.id.goBack)
-//        val backImg = findViewById<ImageView>(R.id.backImg)
 
-        if (review.Img!!.length>1) {
+        if (review.Img != null) {
             val image = findViewById<ImageView>(R.id.detailImage)
             Picasso.get().load(review.Img).into(image)
         }
