@@ -4,12 +4,13 @@ package com.example.newyorklist
 
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.newyorklist.data.*
+import com.example.newyorklist.data.DatabaseHandler
+import com.example.newyorklist.data.Review
+import com.example.newyorklist.data.StateSave
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -78,10 +79,15 @@ class MainActivity : AppCompatActivity() {
                 return false
             }
 
+            //TODO: мне не нравится как это работает. нужно решение получше
             override fun onQueryTextChange(newText: String): Boolean {
-//                data.setQuery(newText)
-//                listReviews.clear()
-//                loadMore(true)
+                val handler = Handler()
+                handler.removeCallbacksAndMessages(null)
+                handler.postDelayed({
+                    data.setQuery(newText)
+                    listReviews.clear()
+                    loadMore(true)
+                }, 1000)
                 return false
             }
         })
