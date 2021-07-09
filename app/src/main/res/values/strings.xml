@@ -6,4 +6,5 @@
     <string name="date">Date</string>
     <string name="goBack">НАЗАД</string>
     <string name="seeMore">ПОДРОБНЕЕ</string>
+    <string name="newslistfragment">NewsListFragment</string>
 </resources>
