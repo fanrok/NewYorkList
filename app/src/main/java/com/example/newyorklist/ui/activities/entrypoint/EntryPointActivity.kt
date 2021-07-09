@@ -16,5 +16,4 @@ class EntryPointActivity: AppCompatActivity() {
                 .commitNow()
         }
     }
-
 }

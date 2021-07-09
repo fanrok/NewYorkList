@@ -6,6 +6,12 @@ import com.google.gson.Gson
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
+/**
+ * api-key: fzrw2QrRVsQcUEXhTQCz2qYWFjPV8XAs
+secret: HTfeigAHETiypjDE
+api-id: efb5ab20-6535-45da-92d3-694955cef14c
+https://api.nytimes.com/svc/movies/v2/reviews/search.json?query=godfather&api-key=fzrw2QrRVsQcUEXhTQCz2qYWFjPV8XAs
+ */
 class LoadDataFromUrl {
     private val URL = "https://api.nytimes.com/svc/movies/v2/reviews/search.json"
     private val API_KEY = "fzrw2QrRVsQcUEXhTQCz2qYWFjPV8XAs"
