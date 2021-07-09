@@ -11,11 +11,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.newyorklist.data.DatabaseHandler
 import com.example.newyorklist.data.Review
 import com.example.newyorklist.data.StateSave
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private var job: Job = Job()
