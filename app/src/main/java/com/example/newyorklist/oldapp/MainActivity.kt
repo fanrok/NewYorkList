@@ -1,4 +1,4 @@
-package com.example.newyorklist
+package com.example.newyorklist.oldapp
 
 //import android.R
 
@@ -8,9 +8,11 @@ import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.newyorklist.data.DatabaseHandler
-import com.example.newyorklist.data.Review
-import com.example.newyorklist.data.StateSave
+import com.example.newyorklist.R
+import com.example.newyorklist.ui.fragments.newslist.adapter.RecyclerViewAdapter
+import com.example.newyorklist.oldData.DatabaseHandler
+import com.example.newyorklist.oldData.Review
+import com.example.newyorklist.oldData.StateSave
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

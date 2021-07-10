@@ -1,4 +1,4 @@
-package com.example.newyorklist.data
+package com.example.newyorklist.oldData
 
 class NewYorkJson {
     data class NewYorkData(

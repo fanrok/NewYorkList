@@ -1,4 +1,4 @@
-package com.example.newyorklist.data
+package com.example.newyorklist.oldData
 
 /**
  * изображение, заголовок, текст обзора, дату публикации

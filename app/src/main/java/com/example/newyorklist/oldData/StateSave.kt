@@ -1,4 +1,4 @@
-package com.example.newyorklist.data
+package com.example.newyorklist.oldData
 
 object StateSave {
     var reviews = mutableListOf<Review>()

@@ -1,4 +1,4 @@
-package com.example.newyorklist.data
+package com.example.newyorklist.oldData
 
 import android.util.Log
 import com.google.gson.Gson

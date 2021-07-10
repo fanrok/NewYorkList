@@ -1,14 +1,14 @@
-package com.example.newyorklist
+package com.example.newyorklist.oldapp
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.example.newyorklist.data.DatabaseHandler
+import com.example.newyorklist.R
+import com.example.newyorklist.oldData.DatabaseHandler
 import com.squareup.picasso.Picasso
 
 class DetailActivity : AppCompatActivity() {

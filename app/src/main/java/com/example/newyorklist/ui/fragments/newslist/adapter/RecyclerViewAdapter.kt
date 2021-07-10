@@ -1,4 +1,4 @@
-package com.example.newyorklist
+package com.example.newyorklist.ui.fragments.newslist.adapter
 
 import android.content.Intent
 import android.view.LayoutInflater
@@ -11,7 +11,9 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.example.newyorklist.data.Review
+import com.example.newyorklist.R
+import com.example.newyorklist.oldData.Review
+import com.example.newyorklist.oldapp.DetailActivity
 import com.squareup.picasso.Picasso
 
 
