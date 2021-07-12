@@ -1,25 +1,15 @@
 package com.example.newyorklist.ui.fragments.newslist
 
 import android.os.Bundle
-import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.newyorklist.R
-import com.example.newyorklist.oldData.DatabaseHandler
-import com.example.newyorklist.oldData.Review
-import com.example.newyorklist.oldData.StateSave
-import com.example.newyorklist.ui.fragments.newslist.adapter.RecyclerViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.news_list_fragment.*
-import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
@@ -45,6 +35,16 @@ class NewsListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        lifecycleScope.launchWhenStarted {
+            viewModel.message.collect {
+                setText(it)
+            }
+        }
+        lifecycleScope.launchWhenStarted {
+            viewModel.listReviews.collect {
+                seeState(it)
+            }
+        }
 //        initAdapter()
 //        initScrollListener()
 //        if (listReviews.size > 0) {//значение больше нуля значит мы восстановили стейт. промотаем список до нужной позиции (smoothScrollToPosition не работает)
@@ -74,14 +74,16 @@ class NewsListFragment : Fragment() {
         return inflater.inflate(R.layout.news_list_fragment, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        lifecycleScope.launchWhenStarted {
-            viewModel.message.collect{
-                setText(it)
+    private fun seeState(state: NewsListFragmentState) {
+        when (state) {
+            is NewsListFragmentState.Data -> {
+                setText(state.list.toString())
             }
-            viewModel.listReviews.collect{
-                Log.d("DATA", it.toString())
+            is NewsListFragmentState.Empty -> {
+                setText("Empty")
+            }
+            is NewsListFragmentState.Loading -> {
+                setText("Loading")
             }
         }
     }

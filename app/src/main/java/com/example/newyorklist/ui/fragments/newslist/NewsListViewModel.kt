@@ -1,23 +1,26 @@
 package com.example.newyorklist.ui.fragments.newslist
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.newyorklist.domain.ReviewRepository
-import com.example.newyorklist.domain.models.Review
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class NewsListViewModel @Inject constructor(private val reviewRepository: ReviewRepository) : ViewModel() {
+class NewsListViewModel @Inject constructor(private val reviewRepository: ReviewRepository) :
+    ViewModel() {
 
     private val _message = MutableStateFlow("Broad")
     val message: StateFlow<String> = _message.asStateFlow()
 
-    private val _listReviews = MutableSharedFlow<List<Review>>()
-    val listReviews: SharedFlow<List<Review>> = _listReviews.asSharedFlow()
+    private val _listReviews = MutableStateFlow<NewsListFragmentState>(NewsListFragmentState.Empty)
+    val listReviews: StateFlow<NewsListFragmentState> = _listReviews.asStateFlow()
 
     private var haveMoreReviews = false
     private var offset = 0
@@ -32,9 +35,17 @@ class NewsListViewModel @Inject constructor(private val reviewRepository: Review
         _message.value = s
     }
 
-    private fun loadData(){
+    private fun loadData() {
+        _listReviews.value = NewsListFragmentState.Loading
         viewModelScope.launch {
-            _listReviews.tryEmit(reviewRepository.getReviews("q", 0))
+            val data = withContext(Dispatchers.IO) {
+                reviewRepository.getReviews("q", 0)
+            }
+            if (data.isEmpty()) {
+                _listReviews.value = NewsListFragmentState.Empty
+            } else {
+                _listReviews.value = NewsListFragmentState.Data(data)
+            }
         }
     }
 }
