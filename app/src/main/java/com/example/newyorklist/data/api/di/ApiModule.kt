@@ -1,12 +1,17 @@
 package com.example.newyorklist.data.api.di
 
 import android.provider.SyncStateContract
+import com.example.newyorklist.App_HiltComponents
 import com.example.newyorklist.BuildConfig
+import com.example.newyorklist.data.api.ApiHelper
+import com.example.newyorklist.data.api.ApiHelperImpl
 import com.example.newyorklist.data.api.ApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -14,11 +19,11 @@ import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
-@InstallIn(ActivityComponent::class)
+@InstallIn(SingletonComponent::class)
 object ApiModule{
 
     @Provides
-    fun provideBaseUrl() = SyncStateContract.Constants.BASE_URL
+    fun provideBaseUrl() = "https://api.nytimes.com"
 
     @Singleton
     @Provides
