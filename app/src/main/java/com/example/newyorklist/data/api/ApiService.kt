@@ -1,10 +1,7 @@
 package com.example.newyorklist.data.api
 
 import com.example.newyorklist.data.api.models.NewYorkJson
-import com.example.newyorklist.data.api.response.ReviewsResponse
 import retrofit2.Response
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Query
 

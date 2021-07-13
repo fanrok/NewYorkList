@@ -4,11 +4,13 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity (tableName = "reviews")
+@Entity(tableName = "reviews")
 data class ReviewEntity(
-    @PrimaryKey var Id: Long,
-    @ColumnInfo(name = "name") var Name: String?,
-    @ColumnInfo(name = "date") var Date: String?,
-    @ColumnInfo(name = "text") var Text: String?,
-    @ColumnInfo(name = "img") var Img: String?
-)
+    @ColumnInfo(name = "name") var name: String,
+    @ColumnInfo(name = "date") var date: String,
+    @ColumnInfo(name = "text") var text: String,
+    @ColumnInfo(name = "img") var img: String
+) {
+    @PrimaryKey(autoGenerate = true)
+    var id: Long = 0
+}

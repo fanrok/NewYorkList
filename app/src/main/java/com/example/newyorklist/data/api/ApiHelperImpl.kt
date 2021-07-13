@@ -1,7 +1,6 @@
 package com.example.newyorklist.data.api
 
 import com.example.newyorklist.data.api.models.NewYorkJson
-import com.example.newyorklist.data.api.response.ReviewsResponse
 import retrofit2.Response
 import javax.inject.Inject
 
