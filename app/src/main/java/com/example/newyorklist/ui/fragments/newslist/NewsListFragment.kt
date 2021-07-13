@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.newyorklist.R
+import com.example.newyorklist.ui.fragments.newslist.adapter.RecyclerViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.news_list_fragment.*
 import kotlinx.coroutines.flow.collect
@@ -17,17 +18,12 @@ class NewsListFragment : Fragment() {
     companion object {
         fun newInstance() = NewsListFragment()
     }
-//    private var job: Job = Job()
-//
-//    val ioScope = CoroutineScope(Dispatchers.IO + job)
-//    val uiScope = CoroutineScope(Dispatchers.Main + job)
-//
-//    var recyclerViewAdapter: RecyclerViewAdapter? = null
-//    var listReviews = StateSave.reviews
+
+    lateinit var recyclerViewAdapter: RecyclerViewAdapter
+
+    //    var listReviews = StateSave.reviews
 //    val data = StateSave.api
-//    var isLoading = false
-//
-//    val db = DatabaseHandler(requireActivity().applicationContext)
+    var isLoading = false
 
     private val viewModel by viewModels<NewsListViewModel>()
 
@@ -45,7 +41,7 @@ class NewsListFragment : Fragment() {
                 seeState(it)
             }
         }
-//        initAdapter()
+
 //        initScrollListener()
 //        if (listReviews.size > 0) {//значение больше нуля значит мы восстановили стейт. промотаем список до нужной позиции (smoothScrollToPosition не работает)
 //            recyclerView?.scrollToPosition(StateSave.scrollPosition)
@@ -74,10 +70,16 @@ class NewsListFragment : Fragment() {
         return inflater.inflate(R.layout.news_list_fragment, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initAdapter()
+    }
+
     private fun seeState(state: NewsListFragmentState) {
         when (state) {
             is NewsListFragmentState.Data -> {
-                setText(state.list.toString())
+//                setText(state.list.toString())
+                recyclerViewAdapter.setList(state.list)
             }
             is NewsListFragmentState.Empty -> {
                 setText("Empty")
@@ -89,12 +91,12 @@ class NewsListFragment : Fragment() {
     }
 
 
-//
-//    private fun initAdapter() {
-//        recyclerViewAdapter = RecyclerViewAdapter(listReviews)
-//        recyclerView!!.adapter = recyclerViewAdapter
-//    }
-//
+    //
+    private fun initAdapter() {
+        recyclerViewAdapter = RecyclerViewAdapter()
+        recyclerView.adapter = recyclerViewAdapter
+    }
+
 //    private fun initScrollListener() {
 //        recyclerView!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 //            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {

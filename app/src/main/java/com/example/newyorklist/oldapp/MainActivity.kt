@@ -9,10 +9,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.newyorklist.R
-import com.example.newyorklist.ui.fragments.newslist.adapter.RecyclerViewAdapter
 import com.example.newyorklist.oldData.DatabaseHandler
 import com.example.newyorklist.oldData.Review
 import com.example.newyorklist.oldData.StateSave
+import com.example.newyorklist.ui.fragments.newslist.adapter.RecyclerViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -69,15 +69,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initAdapter() {
-        recyclerViewAdapter = RecyclerViewAdapter(listReviews)
+//        recyclerViewAdapter = RecyclerViewAdapter(listReviews)
+        recyclerViewAdapter = RecyclerViewAdapter()
         recyclerView!!.adapter = recyclerViewAdapter
     }
 
     private fun initScrollListener() {
         recyclerView!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-            }
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -151,7 +149,4 @@ class MainActivity : AppCompatActivity() {
         StateSave.reviews = listReviews
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
 }

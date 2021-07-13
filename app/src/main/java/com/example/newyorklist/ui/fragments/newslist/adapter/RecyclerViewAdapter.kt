@@ -12,13 +12,20 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.newyorklist.R
-import com.example.newyorklist.oldData.Review
+import com.example.newyorklist.domain.models.Review
 import com.example.newyorklist.oldapp.DetailActivity
 import com.squareup.picasso.Picasso
 
 
-class RecyclerViewAdapter(var mItemList: List<Review>) :
+class RecyclerViewAdapter :
     RecyclerView.Adapter<ViewHolder>() {
+    private var mItemList: List<Review> = listOf()
+
+    fun setList(list: List<Review>) {
+        mItemList = list
+        notifyDataSetChanged()
+    }
+
     private val VIEW_TYPE_ITEM = 0
     private val VIEW_TYPE_LOADING = 1
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
