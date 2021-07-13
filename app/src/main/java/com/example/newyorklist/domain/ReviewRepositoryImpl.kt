@@ -47,10 +47,10 @@ class ReviewRepositoryImpl @Inject constructor(
     class SimpleMapper {
         fun resultToReview(result: NewYorkJson.Result): Review {
             return Review(
-                Name = result.display_title,
-                Date = result.publication_date,
-                Text = result.summary_short,
-                Img = result.multimedia?.src ?: ""
+                name = result.display_title,
+                date = result.publication_date,
+                text = result.summary_short,
+                img = result.multimedia?.src ?: ""
             )
         }
     }

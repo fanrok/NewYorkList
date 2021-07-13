@@ -59,7 +59,7 @@ class RecyclerViewAdapter :
      * @return
      */
     override fun getItemViewType(position: Int): Int {
-        return if (mItemList[position].Name == null) VIEW_TYPE_LOADING else VIEW_TYPE_ITEM
+        return if (mItemList[position].name == null) VIEW_TYPE_LOADING else VIEW_TYPE_ITEM
     }
 
     private inner class ItemViewHolder(itemView: View) :
@@ -95,13 +95,13 @@ class RecyclerViewAdapter :
         position: Int
     ) {
         val item = mItemList[position]
-        viewHolder.tvItem?.text = item.Name
-        if (!item.Img.isNullOrEmpty()) {
-            Picasso.get().load(item.Img).into(viewHolder.imageView)
+        viewHolder.tvItem?.text = item.name
+        if (!item.img.isNullOrEmpty()) {
+            Picasso.get().load(item.img).into(viewHolder.imageView)
         }
         viewHolder.seeMore?.setOnClickListener {
             val intent = Intent(it.context, DetailActivity::class.java)
-            intent.putExtra("id", item.Id)
+            intent.putExtra("id", item.id)
             ContextCompat.startActivity(it.context, intent, null)
         }
     }
