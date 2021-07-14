@@ -6,13 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.newyorklist.databinding.ReviewsListBinding
 import com.example.newyorklist.ui.fragments.base.BaseFragmentWithBinding
 import com.example.newyorklist.ui.fragments.reviewslist.adapter.RecyclerViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ReviewsListFragment : BaseFragmentWithBinding<ReviewsListBinding>() {
@@ -32,39 +35,20 @@ class ReviewsListFragment : BaseFragmentWithBinding<ReviewsListBinding>() {
             }
         }
 
-//        initScrollListener()
-//        if (listReviews.size > 0) {//значение больше нуля значит мы восстановили стейт. промотаем список до нужной позиции (smoothScrollToPosition не работает)
-//            recyclerView?.scrollToPosition(StateSave.scrollPosition)
-//        }
-//
-//        search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-//            override fun onQueryTextSubmit(query: String): Boolean {
-//                data.setQuery(query)
-//                listReviews.clear()
-//                loadMore(true)
-//                return false
-//            }
-//
-//            //TODO: мне не нравится как это работает. нужно решение получше
-//            override fun onQueryTextChange(newText: String): Boolean {
-//                val handler = Handler()
-//                handler.removeCallbacksAndMessages(null)
-//                handler.postDelayed({
-//                    data.setQuery(newText)
-//                    listReviews.clear()
-//                    loadMore(true)
-//                }, 1000)
-//                return false
-//            }
-//        })
         _binding = ReviewsListBinding.inflate(inflater, container, false)
         val view = binding.root
         return view
     }
 
+    @ExperimentalCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initAdapter()
+        binding.search.doAfterTextChanged { editable ->
+            lifecycleScope.launch {
+                viewModel.queryChannel.send(editable.toString())
+            }
+        }
     }
 
     private fun seeState(state: ReviewsListFragmentState) {
@@ -160,6 +144,7 @@ class ReviewsListFragment : BaseFragmentWithBinding<ReviewsListBinding>() {
 
 
     private fun setText(mes: String) {
-        binding.message.text = mes
+        Toast.makeText(context, mes, Toast.LENGTH_LONG).show()
+        Log.d("TAGS", mes)
     }
 }
