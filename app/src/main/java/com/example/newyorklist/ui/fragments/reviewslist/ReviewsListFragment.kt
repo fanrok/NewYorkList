@@ -1,9 +1,11 @@
 package com.example.newyorklist.ui.fragments.reviewslist
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.newyorklist.databinding.ReviewsListBinding
@@ -83,7 +85,10 @@ class ReviewsListFragment : BaseFragmentWithBinding<ReviewsListBinding>() {
 
     //
     private fun initAdapter() {
-        recyclerViewAdapter = RecyclerViewAdapter()
+        recyclerViewAdapter = RecyclerViewAdapter(
+            ::scrollListener,
+            ::clickListener
+        )
         binding.recyclerView.adapter = recyclerViewAdapter
     }
 
@@ -143,6 +148,15 @@ class ReviewsListFragment : BaseFragmentWithBinding<ReviewsListBinding>() {
 //        }, 0)
 //    }
 
+    private fun scrollListener() {
+        Toast.makeText(context, "А вы таки домотали до конца", Toast.LENGTH_LONG).show()
+        Log.d("TAGS", "А вы таки домотали до конца")
+    }
+
+    private fun clickListener(name: String) {
+        Toast.makeText(context, "Ты кликнул на $name", Toast.LENGTH_LONG).show()
+        Log.d("TAGS", "Ты кликнул на $name")
+    }
 
 
     private fun setText(mes: String) {

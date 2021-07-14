@@ -9,9 +9,22 @@ import com.example.newyorklist.databinding.ItemRowBinding
 import com.example.newyorklist.domain.models.Review
 import com.squareup.picasso.Picasso
 
-
-class RecyclerViewAdapter :
+/**
+ * @param scroll - лямда, дернется когда список будет отмотан до конца
+ * @param click - лямбда, дернется при клике на на эдемент
+ */
+class RecyclerViewAdapter(
+    private val scroll: () -> Unit,
+    private val click: (name: String) -> Unit
+) :
     RecyclerView.Adapter<ViewHolder>() {
+
+    companion object {
+        private const val VIEW_TYPE_ITEM = 0
+        private const val VIEW_TYPE_LOADING = 1
+    }
+
+
     private var mItemList: List<Review> = listOf()
 
     fun setList(list: List<Review>) {
@@ -19,8 +32,6 @@ class RecyclerViewAdapter :
         notifyDataSetChanged()
     }
 
-    private val VIEW_TYPE_ITEM = 0
-    private val VIEW_TYPE_LOADING = 1
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val itemRowBinding: ItemRowBinding = ItemRowBinding.inflate(layoutInflater, parent, false)
@@ -34,8 +45,11 @@ class RecyclerViewAdapter :
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
+        if (position == mItemList.size - 1) {
+            scroll()
+        }
         if (viewHolder is ItemViewHolder) {
-            viewHolder.bind(mItemList[position])
+            viewHolder.bind(mItemList[position], click)
         } else if (viewHolder is LoadingViewHolder) {
             viewHolder.bind()
         }
@@ -52,13 +66,13 @@ class RecyclerViewAdapter :
     private class ItemViewHolder(bind: ItemRowBinding) : ViewHolder(bind.root) {
         private var binding: ItemRowBinding = bind
 
-        fun bind(review: Review) {
-            binding.tvItem.text = review.name
+        fun bind(review: Review, click: (name: String) -> Unit) {
+            binding.name.text = review.name
             if (!review.img.isNullOrEmpty()) {
                 Picasso.get().load(review.img).into(binding.imageView)
             }
             binding.seeMore.setOnClickListener {
-                //TODO тут сделать лямбду
+                click(review.name)
             }
         }
     }
@@ -66,6 +80,5 @@ class RecyclerViewAdapter :
     private class LoadingViewHolder(bind: ItemLoadingBinding) : ViewHolder(bind.root) {
         fun bind() {}
     }
-
 
 }
