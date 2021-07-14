@@ -4,17 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.example.newyorklist.R
+import com.example.newyorklist.databinding.ReviewsListBinding
+import com.example.newyorklist.ui.fragments.base.BaseFragmentWithBinding
 import com.example.newyorklist.ui.fragments.reviewslist.adapter.RecyclerViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.news_list_fragment.*
 import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
-class ReviewsListFragment : Fragment() {
+class ReviewsListFragment : BaseFragmentWithBinding<ReviewsListBinding>() {
 
     lateinit var recyclerViewAdapter: RecyclerViewAdapter
     var isLoading = false
@@ -56,7 +55,9 @@ class ReviewsListFragment : Fragment() {
 //                return false
 //            }
 //        })
-        return inflater.inflate(R.layout.news_list_fragment, container, false)
+        _binding = ReviewsListBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -83,7 +84,7 @@ class ReviewsListFragment : Fragment() {
     //
     private fun initAdapter() {
         recyclerViewAdapter = RecyclerViewAdapter()
-        recyclerView.adapter = recyclerViewAdapter
+        binding.recyclerView.adapter = recyclerViewAdapter
     }
 
 //    private fun initScrollListener() {
@@ -142,33 +143,9 @@ class ReviewsListFragment : Fragment() {
 //        }, 0)
 //    }
 
-//    override fun onSaveInstanceState(outState: Bundle) {
-//        super.onSaveInstanceState(outState)
-//        val search: SearchView = findViewById(R.id.search)
-//        val searchText = search.query
-//        outState.putCharSequence("searchText", searchText)
-//        StateSave.reviews = listReviews
-//
-//    }
-//
-//    override fun onRestoreInstanceState(savedInstanceState: Bundle) {//я не понимаю почему, но при поворотах экрана и при изменении экрана этот метод просто не вызывается
-//        super.onRestoreInstanceState(savedInstanceState)
-//        val userText = savedInstanceState.getCharSequence("searchText")
-//        val search: SearchView = findViewById(R.id.search)
-//        search.setQuery(userText, false)
-////        listReviews = StateSave.reviews
-//    }
 
-//    override fun onPause() {
-//        super.onPause()
-//        StateSave.reviews = listReviews
-//    }
-//
-//    override fun onResume() {
-//        super.onResume()
-//    }
 
     private fun setText(mes: String) {
-        message.text = mes
+        binding.message.text = mes
     }
 }
