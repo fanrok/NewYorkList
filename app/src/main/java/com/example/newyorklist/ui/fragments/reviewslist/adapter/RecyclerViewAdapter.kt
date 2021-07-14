@@ -1,4 +1,4 @@
-package com.example.newyorklist.ui.fragments.newslist.adapter
+package com.example.newyorklist.ui.fragments.reviewslist.adapter
 
 import android.content.Intent
 import android.view.LayoutInflater

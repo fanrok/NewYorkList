@@ -12,7 +12,7 @@ import com.example.newyorklist.R
 import com.example.newyorklist.oldData.DatabaseHandler
 import com.example.newyorklist.oldData.Review
 import com.example.newyorklist.oldData.StateSave
-import com.example.newyorklist.ui.fragments.newslist.adapter.RecyclerViewAdapter
+import com.example.newyorklist.ui.fragments.reviewslist.adapter.RecyclerViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

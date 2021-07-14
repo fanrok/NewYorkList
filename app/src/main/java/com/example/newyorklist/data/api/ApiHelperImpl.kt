@@ -8,6 +8,7 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) :Api
     /**
      * @param query - текст, по которому происходит поиск
      * @param offset - с какого номера начинать выборку запроса(выдает по 20 штук)
+     * @return - ответ от сервера
      */
     override suspend fun getReviews(query: String, offset: Int): Response<NewYorkJson.NewYorkData> =  apiService.getReviews(query, offset)
 }

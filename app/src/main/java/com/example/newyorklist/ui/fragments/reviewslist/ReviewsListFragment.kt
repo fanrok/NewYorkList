@@ -1,4 +1,4 @@
-package com.example.newyorklist.ui.fragments.newslist
+package com.example.newyorklist.ui.fragments.reviewslist
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,34 +8,23 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.newyorklist.R
-import com.example.newyorklist.ui.fragments.newslist.adapter.RecyclerViewAdapter
+import com.example.newyorklist.ui.fragments.reviewslist.adapter.RecyclerViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.news_list_fragment.*
 import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
-class NewsListFragment : Fragment() {
-    companion object {
-        fun newInstance() = NewsListFragment()
-    }
+class ReviewsListFragment : Fragment() {
 
     lateinit var recyclerViewAdapter: RecyclerViewAdapter
-
-    //    var listReviews = StateSave.reviews
-//    val data = StateSave.api
     var isLoading = false
 
-    private val viewModel by viewModels<NewsListViewModel>()
+    private val viewModel by viewModels<ReviewsListViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        lifecycleScope.launchWhenStarted {
-            viewModel.message.collect {
-                setText(it)
-            }
-        }
         lifecycleScope.launchWhenStarted {
             viewModel.listReviews.collect {
                 seeState(it)
@@ -75,16 +64,16 @@ class NewsListFragment : Fragment() {
         initAdapter()
     }
 
-    private fun seeState(state: NewsListFragmentState) {
+    private fun seeState(state: ReviewsListFragmentState) {
         when (state) {
-            is NewsListFragmentState.Data -> {
+            is ReviewsListFragmentState.Data -> {
 //                setText(state.list.toString())
                 recyclerViewAdapter.setList(state.list)
             }
-            is NewsListFragmentState.Empty -> {
+            is ReviewsListFragmentState.Empty -> {
                 setText("Empty")
             }
-            is NewsListFragmentState.Loading -> {
+            is ReviewsListFragmentState.Loading -> {
                 setText("Loading")
             }
         }

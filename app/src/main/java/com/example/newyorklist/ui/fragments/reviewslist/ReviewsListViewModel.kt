@@ -1,4 +1,4 @@
-package com.example.newyorklist.ui.fragments.newslist
+package com.example.newyorklist.ui.fragments.reviewslist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,14 +13,15 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class NewsListViewModel @Inject constructor(private val reviewRepository: ReviewRepository) :
+class ReviewsListViewModel @Inject constructor(private val reviewRepository: ReviewRepository) :
     ViewModel() {
 
     private val _message = MutableStateFlow("Broad")
     val message: StateFlow<String> = _message.asStateFlow()
 
-    private val _listReviews = MutableStateFlow<NewsListFragmentState>(NewsListFragmentState.Empty)
-    val listReviews: StateFlow<NewsListFragmentState> = _listReviews.asStateFlow()
+    private val _listReviews =
+        MutableStateFlow<ReviewsListFragmentState>(ReviewsListFragmentState.Empty)
+    val listReviews: StateFlow<ReviewsListFragmentState> = _listReviews.asStateFlow()
 
     private var haveMoreReviews = false
     private var offset = 0
@@ -36,15 +37,15 @@ class NewsListViewModel @Inject constructor(private val reviewRepository: Review
     }
 
     private fun loadData() {
-        _listReviews.value = NewsListFragmentState.Loading
+        _listReviews.value = ReviewsListFragmentState.Loading
         viewModelScope.launch {
             val data = withContext(Dispatchers.IO) {
                 reviewRepository.getReviews("q", 0)
             }
             if (data.isEmpty()) {
-                _listReviews.value = NewsListFragmentState.Empty
+                _listReviews.value = ReviewsListFragmentState.Empty
             } else {
-                _listReviews.value = NewsListFragmentState.Data(data)
+                _listReviews.value = ReviewsListFragmentState.Data(data)
             }
         }
     }
