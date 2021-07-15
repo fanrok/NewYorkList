@@ -6,10 +6,14 @@ import com.example.newyorklist.domain.models.Review
 interface ReviewRepository {
     /**
      * @param query - поисковый запрос
-     * @param offset - с какой позиции запрашивать выборку
      * @return список отзывов
      */
-    suspend fun getReviews(query: String, offset: Int): List<Review>
+    suspend fun getReviews(query: String): List<Review>
+
+    /**
+     * @return список отзывов
+     */
+    suspend fun giveMoreReviews(): List<Review>
 
     /**
      * @param name - имя заголовка. Бек не присылает уникальный id, поэтому выборку делаю по имени

@@ -14,6 +14,7 @@ import com.example.newyorklist.ui.fragments.base.BaseFragmentWithBinding
 import com.example.newyorklist.ui.fragments.reviewslist.adapter.RecyclerViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -21,10 +22,13 @@ import kotlinx.coroutines.launch
 class ReviewsListFragment : BaseFragmentWithBinding<ReviewsListBinding>() {
 
     lateinit var recyclerViewAdapter: RecyclerViewAdapter
-    var isLoading = false
 
+    @ExperimentalCoroutinesApi
+    @FlowPreview
     private val viewModel by viewModels<ReviewsListViewModel>()
 
+    @ExperimentalCoroutinesApi
+    @FlowPreview
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -36,17 +40,17 @@ class ReviewsListFragment : BaseFragmentWithBinding<ReviewsListBinding>() {
         }
 
         _binding = ReviewsListBinding.inflate(inflater, container, false)
-        val view = binding.root
-        return view
+        return binding.root
     }
 
+    @FlowPreview
     @ExperimentalCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initAdapter()
         binding.search.doAfterTextChanged { editable ->
             lifecycleScope.launch {
-                viewModel.queryChannel.send(editable.toString())
+                viewModel.setSearchText(editable.toString())
             }
         }
     }
@@ -54,7 +58,6 @@ class ReviewsListFragment : BaseFragmentWithBinding<ReviewsListBinding>() {
     private fun seeState(state: ReviewsListFragmentState) {
         when (state) {
             is ReviewsListFragmentState.Data -> {
-//                setText(state.list.toString())
                 recyclerViewAdapter.setList(state.list)
             }
             is ReviewsListFragmentState.Empty -> {
@@ -67,7 +70,8 @@ class ReviewsListFragment : BaseFragmentWithBinding<ReviewsListBinding>() {
     }
 
 
-    //
+    @ExperimentalCoroutinesApi
+    @FlowPreview
     private fun initAdapter() {
         recyclerViewAdapter = RecyclerViewAdapter(
             ::scrollListener,
@@ -76,65 +80,12 @@ class ReviewsListFragment : BaseFragmentWithBinding<ReviewsListBinding>() {
         binding.recyclerView.adapter = recyclerViewAdapter
     }
 
-//    private fun initScrollListener() {
-//        recyclerView!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-//            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-//                super.onScrollStateChanged(recyclerView, newState)
-//            }
-//
-//            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-//                super.onScrolled(recyclerView, dx, dy)
-//                val linearLayoutManager = recyclerView.layoutManager as LinearLayoutManager
-//                StateSave.scrollPosition =
-//                    linearLayoutManager.findFirstCompletelyVisibleItemPosition()
-//                if (!isLoading && data.getHasMore()) {
-//                    if (linearLayoutManager.findLastCompletelyVisibleItemPosition() == listReviews.size - 1 && listReviews.size > 1) {
-//                        loadMore(false)
-//                        isLoading = true
-//                    }
-//                }
-//            }
-//        })
-//    }
-//
-//    private fun loadMore(newList: Boolean = false) {
-//        if (newList) {
-//            recyclerView?.post {
-//                recyclerViewAdapter?.notifyDataSetChanged()
-//            }
-//        }
-//        listReviews.add(Review())
-//        recyclerView?.post {
-//            recyclerViewAdapter?.notifyItemInserted(listReviews.size)
-//        }
-//        val scrollPosition: Int = listReviews.size
-//        val handler = Handler()
-//        handler.postDelayed({
-//            ioScope.launch {
-//                val result = data.loadData()
-//                if (newList) {
-//                    listReviews.clear()
-//                } else {
-//                    listReviews.removeAt(listReviews.size - 1)
-//                }
-//                val reviews = db.addReviewsInDB(db, result.results, listReviews)
-//                uiScope.launch {
-//                    listReviews = reviews
-//                    recyclerView?.post {
-//                        recyclerViewAdapter?.notifyItemRangeChanged(
-//                            scrollPosition - 1,
-//                            listReviews.size - scrollPosition
-//                        )
-//                    }
-//                    isLoading = false
-//                }
-//            }
-//        }, 0)
-//    }
-
+    @ExperimentalCoroutinesApi
+    @FlowPreview
     private fun scrollListener() {
         Toast.makeText(context, "А вы таки домотали до конца", Toast.LENGTH_LONG).show()
         Log.d("TAGS", "А вы таки домотали до конца")
+        viewModel.needMoreReviews()
     }
 
     private fun clickListener(name: String) {

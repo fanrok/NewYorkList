@@ -11,12 +11,36 @@ class ReviewRepositoryImpl @Inject constructor(
     private val reviewDao: ReviewDao,
     private val apiHelper: ApiHelper
 ) : ReviewRepository {
-    override suspend fun getReviews(query: String, offset: Int): List<Review> {
-        val mapper = SimpleMapper()
-        val list = mutableListOf<Review>()
+    private var offset = 0
+    private var searchQuery = ""
+    private val list = mutableListOf<Review>()
+    private val mapper = SimpleMapper()
+
+    override suspend fun getReviews(query: String): List<Review> {
+        list.clear()
+        offset = 0
+        searchQuery = query
         apiHelper.getReviews(query, offset).let {
             if (it.isSuccessful) {
                 it.body()?.let { body ->
+                    if (body.num_results == 0) return listOf()
+                    body.results.forEach { item ->
+                        list.add(mapper.resultToReview(item))
+                        insertToDataBase(item)
+                    }
+                    return list
+                }
+            }
+        }
+        return list
+    }
+
+    override suspend fun giveMoreReviews(): List<Review> {
+        offset += 20
+        apiHelper.getReviews(searchQuery, offset).let {
+            if (it.isSuccessful) {
+                it.body()?.let { body ->
+                    if (body.num_results == 0) return list
                     body.results.forEach { item ->
                         list.add(mapper.resultToReview(item))
                         insertToDataBase(item)

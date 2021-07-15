@@ -6,66 +6,71 @@ import androidx.lifecycle.viewModelScope
 import com.example.newyorklist.domain.ReviewRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.BroadcastChannel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
+@FlowPreview
+@ExperimentalCoroutinesApi
 @HiltViewModel
 class ReviewsListViewModel @Inject constructor(private val reviewRepository: ReviewRepository) :
     ViewModel() {
 
     companion object {
         private const val SEARCH_DELAY_MS = 500L
+        private const val MIN_QUERY_LENGTH = 1
     }
 
-    private val _message = MutableStateFlow("Broad")
-    val message: StateFlow<String> = _message.asStateFlow()
+    private val _searchQuery = MutableStateFlow("")
 
     private val _listReviews =
         MutableStateFlow<ReviewsListFragmentState>(ReviewsListFragmentState.Empty)
     val listReviews: StateFlow<ReviewsListFragmentState> = _listReviews.asStateFlow()
-
-    @ExperimentalCoroutinesApi
-    internal val queryChannel = BroadcastChannel<String>(Channel.CONFLATED)
-
-    @FlowPreview
-    @ExperimentalCoroutinesApi
-    internal val internalSearchResult = queryChannel
-        .asFlow()
-        .debounce(SEARCH_DELAY_MS)
-        .mapLatest {
-            needMoreReviews()
-        }
-
-    private fun needMoreReviews() {
-        Log.d("VMTAGS", "needMoreReviews")
-    }
 
     private var haveMoreReviews = false
     private var offset = 0
     private var query = ""
 
     init {
-        setMessage("init")
-        loadData()
+        searchListener()
     }
 
-    fun setMessage(s: String) {
-        _message.value = s
-    }
-
-    private fun loadData() {
-        _listReviews.value = ReviewsListFragmentState.Loading
+    private fun searchListener() {
         viewModelScope.launch {
-            val data = withContext(Dispatchers.IO) {
-                reviewRepository.getReviews("q", 0)
-            }
-            if (data.isEmpty()) {
-                _listReviews.value = ReviewsListFragmentState.Empty
-            } else {
-                _listReviews.value = ReviewsListFragmentState.Data(data)
+            withContext(Dispatchers.IO) {
+                _searchQuery
+                    .debounce(SEARCH_DELAY_MS)
+                    .distinctUntilChanged()
+                    .collect {
+                        Log.d("RLVM", it)
+                        if (it.length >= MIN_QUERY_LENGTH) {
+                            _listReviews.value = ReviewsListFragmentState.Loading
+                            val data = reviewRepository.getReviews(it)
+                            if (data.isEmpty()) {
+                                _listReviews.value = ReviewsListFragmentState.Empty
+                            } else {
+                                _listReviews.value = ReviewsListFragmentState.Data(data)
+                            }
+                        }
+                    }
             }
         }
+    }
+
+    fun needMoreReviews() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                _listReviews.value = ReviewsListFragmentState.Loading
+                val data = reviewRepository.giveMoreReviews()
+                if (data.isEmpty()) {
+                    _listReviews.value = ReviewsListFragmentState.Empty
+                } else {
+                    _listReviews.value = ReviewsListFragmentState.Data(data)
+                }
+            }
+        }
+    }
+
+    fun setSearchText(s: String) {
+        _searchQuery.value = s
     }
 }
