@@ -2,8 +2,8 @@ package com.example.newyorklist.ui.fragments.reviewdetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.newyorklist.domain.ReviewRepository
-import com.example.newyorklist.domain.models.Review
+import com.example.newyorklist.domain.repositories.ReviewRepository
+import com.example.newyorklist.domain.repositories.models.Review
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

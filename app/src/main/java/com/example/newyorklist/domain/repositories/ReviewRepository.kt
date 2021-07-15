@@ -1,6 +1,6 @@
-package com.example.newyorklist.domain
+package com.example.newyorklist.domain.repositories
 
-import com.example.newyorklist.domain.models.Review
+import com.example.newyorklist.domain.repositories.models.Review
 
 
 interface ReviewRepository {

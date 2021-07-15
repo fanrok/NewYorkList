@@ -3,7 +3,7 @@ package com.example.newyorklist.ui.fragments.reviewslist
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.newyorklist.domain.ReviewRepository
+import com.example.newyorklist.domain.repositories.ReviewRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*

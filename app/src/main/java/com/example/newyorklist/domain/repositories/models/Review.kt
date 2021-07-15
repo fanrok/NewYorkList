@@ -1,4 +1,4 @@
-package com.example.newyorklist.domain.models
+package com.example.newyorklist.domain.repositories.models
 
 data class Review(
     val id: Long = 0,

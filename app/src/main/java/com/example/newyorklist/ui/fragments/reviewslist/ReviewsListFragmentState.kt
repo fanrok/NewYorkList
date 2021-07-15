@@ -1,6 +1,6 @@
 package com.example.newyorklist.ui.fragments.reviewslist
 
-import com.example.newyorklist.domain.models.Review
+import com.example.newyorklist.domain.repositories.models.Review
 
 sealed class ReviewsListFragmentState {
     object Loading : ReviewsListFragmentState()

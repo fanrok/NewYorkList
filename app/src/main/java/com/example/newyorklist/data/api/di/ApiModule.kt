@@ -14,13 +14,27 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
+/**
+ * @author Dmitriy Larin
+ * Api module
+ *
+ * @constructor Create empty Api module
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object ApiModule {
 
+    /**
+     * Provide base url
+     *
+     */
     @Provides
     fun provideBaseUrl() = "https://api.nytimes.com"
 
+    /**
+     * Provide ok http client
+     *
+     */
     @Singleton
     @Provides
     fun provideOkHttpClient() = if (BuildConfig.DEBUG) {
@@ -35,6 +49,13 @@ object ApiModule {
             .build()
     }
 
+    /**
+     * Provide retrofit
+     *
+     * @param okHttpClient
+     * @param BASE_URL
+     * @return
+     */
     @Singleton
     @Provides
     fun provideRetrofit(okHttpClient: OkHttpClient, BASE_URL: String): Retrofit = Retrofit.Builder()
@@ -43,10 +64,21 @@ object ApiModule {
         .client(okHttpClient)
         .build()
 
+    /**
+     * Provide api service
+     *
+     * @param retrofit
+     */
     @Provides
     @Singleton
     fun provideApiService(retrofit: Retrofit) = retrofit.create(ApiService::class.java)
 
+    /**
+     * Provide api helper
+     *
+     * @param apiHelper
+     * @return
+     */
     @Provides
     @Singleton
     fun provideApiHelper(apiHelper: ApiHelperImpl): ApiHelper = apiHelper

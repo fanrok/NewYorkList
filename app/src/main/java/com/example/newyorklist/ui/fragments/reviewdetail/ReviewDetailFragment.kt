@@ -8,7 +8,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.newyorklist.databinding.ReviewDetailBinding
-import com.example.newyorklist.domain.models.Review
+import com.example.newyorklist.domain.repositories.models.Review
 import com.example.newyorklist.ui.fragments.base.BaseFragmentWithBinding
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint

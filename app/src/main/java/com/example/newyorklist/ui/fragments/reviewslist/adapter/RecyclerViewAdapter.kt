@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.newyorklist.databinding.ItemLoadingBinding
 import com.example.newyorklist.databinding.ItemRowBinding
-import com.example.newyorklist.domain.models.Review
+import com.example.newyorklist.domain.repositories.models.Review
 import com.squareup.picasso.Picasso
 
 /**

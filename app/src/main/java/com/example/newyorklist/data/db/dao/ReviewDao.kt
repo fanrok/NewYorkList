@@ -6,7 +6,12 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.newyorklist.data.db.entityes.ReviewEntity
 
-
+/**
+ * @author Dmitriy Larin
+ * Review dao
+ *
+ * @constructor Create empty Review dao
+ */
 @Dao
 interface ReviewDao {
 

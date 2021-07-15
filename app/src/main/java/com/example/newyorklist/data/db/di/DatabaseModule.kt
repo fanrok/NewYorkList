@@ -11,6 +11,12 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/**
+ * @author Dmitriy Larin
+ * Database module
+ *
+ * @constructor Create empty Database module
+ */
 @InstallIn(SingletonComponent::class)
 @Module
 class DatabaseModule {
