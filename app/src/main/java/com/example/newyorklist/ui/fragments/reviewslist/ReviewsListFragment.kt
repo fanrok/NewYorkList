@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.newyorklist.databinding.ReviewsListBinding
 import com.example.newyorklist.ui.fragments.base.BaseFragmentWithBinding
 import com.example.newyorklist.ui.fragments.reviewslist.adapter.RecyclerViewAdapter
@@ -91,6 +92,9 @@ class ReviewsListFragment : BaseFragmentWithBinding<ReviewsListBinding>() {
     private fun clickListener(name: String) {
         Toast.makeText(context, "Ты кликнул на $name", Toast.LENGTH_LONG).show()
         Log.d("TAGS", "Ты кликнул на $name")
+        val action =
+            ReviewsListFragmentDirections.actionNewsListFragmentToReviewDetailFragment(name)
+        findNavController().navigate(action)
     }
 
 

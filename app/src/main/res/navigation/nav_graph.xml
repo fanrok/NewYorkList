@@ -15,5 +15,10 @@
     <fragment
         android:id="@+id/reviewDetailFragment"
         android:name="com.example.newyorklist.ui.fragments.reviewdetail.ReviewDetailFragment"
-        android:label="ReviewDetailFragment" />
+        android:label="ReviewDetailFragment">
+        <argument
+            android:name="nameOfReview"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
 </navigation>

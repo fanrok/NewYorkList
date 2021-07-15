@@ -4,48 +4,62 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.newyorklist.databinding.ReviewDetailBinding
+import com.example.newyorklist.domain.models.Review
 import com.example.newyorklist.ui.fragments.base.BaseFragmentWithBinding
+import com.squareup.picasso.Picasso
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 
 /**
  * @author Dmitriy Larin
  */
+@AndroidEntryPoint
 class ReviewDetailFragment : BaseFragmentWithBinding<ReviewDetailBinding>() {
+
+    private lateinit var nameOfReview: String
+    private val viewModel by viewModels<ReviewDetailViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = ReviewDetailBinding.inflate(inflater, container, false)
-        val view = binding.root
-        return view
-    }
-
-    /*
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.item_detail)
-        val db = DatabaseHandler(this)
-        val id = getIntent().getExtras()!!.getLong("id")
-        val review = db.getReviewById(id.toInt())
-        val date = findViewById<TextView>(R.id.date)
-        val name = findViewById<TextView>(R.id.name)
-        val text = findViewById<TextView>(R.id.detailText)
-        val btn = findViewById<Button>(R.id.goBack)
-
-        if (review.Img != null) {
-            val image = findViewById<ImageView>(R.id.detailImage)
-            Picasso.get().load(review.Img).into(image)
+        if (arguments != null) {
+            nameOfReview =
+                ReviewDetailFragmentArgs.fromBundle(requireArguments()).nameOfReview.toString()
+            if (nameOfReview.isBlank() || nameOfReview.isEmpty()) {
+                findNavController().popBackStack()
+            }
+        } else {
+            findNavController().popBackStack()
         }
 
-        date.setText(review.Date)
-        name.setText(review.Name)
-        text.setText(review.Text)
+        viewModel.loadReview(nameOfReview)
 
-        btn.setOnClickListener {
-            val intent = Intent(it.context, MainActivity::class.java)
-            ContextCompat.startActivity(it.context, intent, null)
+        lifecycleScope.launchWhenStarted {
+            viewModel.review.collect {
+                setView(it)
+            }
+        }
+
+        return binding.root
+    }
+
+    private fun setView(review: Review) {
+
+        binding.detailText.text = review.text
+        binding.name.text = review.name
+        binding.date.text = review.date
+        if (review.img.isNotEmpty()) {
+            Picasso.get().load(review.img).into(binding.detailImage)
+        }
+
+        binding.goBack.setOnClickListener {
+            findNavController().popBackStack()
         }
     }
-     */
 }
