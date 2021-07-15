@@ -57,6 +57,7 @@ class ReviewsListViewModel @Inject constructor(private val reviewRepository: Rev
     }
 
     fun needMoreReviews() {
+        if (_listReviews.value == ReviewsListFragmentState.Loading) return
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 _listReviews.value = ReviewsListFragmentState.Loading

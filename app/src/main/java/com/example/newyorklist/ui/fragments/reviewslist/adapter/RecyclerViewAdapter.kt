@@ -2,11 +2,11 @@ package com.example.newyorklist.ui.fragments.reviewslist.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.newyorklist.databinding.ItemLoadingBinding
 import com.example.newyorklist.databinding.ItemRowBinding
-import com.example.newyorklist.domain.repositories.models.Review
 import com.squareup.picasso.Picasso
 
 /**
@@ -25,11 +25,10 @@ class RecyclerViewAdapter(
     }
 
 
-    private var mItemList: List<Review> = listOf()
+    private var mItemList: List<RecyclerViewAdapterState> = listOf()
 
-    fun setList(list: List<Review>) {
-        mItemList = list
-        notifyDataSetChanged()
+    fun setList(list: List<RecyclerViewAdapterState>) {
+        notifyChanges(mItemList, list)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -49,7 +48,7 @@ class RecyclerViewAdapter(
             scroll()
         }
         if (viewHolder is ItemViewHolder) {
-            viewHolder.bind(mItemList[position], click)
+            viewHolder.bind(mItemList[position] as RecyclerViewAdapterState.Item, click)
         } else if (viewHolder is LoadingViewHolder) {
             viewHolder.bind()
         }
@@ -60,25 +59,57 @@ class RecyclerViewAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (mItemList[position].name == null) VIEW_TYPE_LOADING else VIEW_TYPE_ITEM
+        return when (mItemList[position]) {
+            is RecyclerViewAdapterState.Loading -> VIEW_TYPE_LOADING
+            is RecyclerViewAdapterState.Item -> VIEW_TYPE_ITEM
+        }
     }
 
     private class ItemViewHolder(bind: ItemRowBinding) : ViewHolder(bind.root) {
         private var binding: ItemRowBinding = bind
 
-        fun bind(review: Review, click: (name: String) -> Unit) {
-            binding.name.text = review.name
-            if (!review.img.isNullOrEmpty()) {
-                Picasso.get().load(review.img).into(binding.imageView)
+        fun bind(review: RecyclerViewAdapterState.Item, click: (name: String) -> Unit) {
+            binding.name.text = review.review.name
+            if (review.review.img.isNotEmpty()) {
+                Picasso.get().load(review.review.img).into(binding.imageView)
             }
             binding.seeMore.setOnClickListener {
-                click(review.name)
+                click(review.review.name)
             }
         }
     }
 
     private class LoadingViewHolder(bind: ItemLoadingBinding) : ViewHolder(bind.root) {
         fun bind() {}
+    }
+
+    private fun notifyChanges(
+        oldList: List<RecyclerViewAdapterState>,
+        newList: List<RecyclerViewAdapterState>
+    ) {
+
+        val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                if (oldList[oldItemPosition] is RecyclerViewAdapterState.Loading && newList[newItemPosition] is RecyclerViewAdapterState.Loading) return true
+                if (oldList[oldItemPosition] is RecyclerViewAdapterState.Item && newList[newItemPosition] is RecyclerViewAdapterState.Loading) return false
+                if (oldList[oldItemPosition] is RecyclerViewAdapterState.Loading && newList[newItemPosition] is RecyclerViewAdapterState.Item) return false
+                val oldP = oldList[oldItemPosition] as RecyclerViewAdapterState.Item
+                val newP = newList[newItemPosition] as RecyclerViewAdapterState.Item
+                if (oldP.review.name == newP.review.name) return true
+                return false
+            }
+
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return oldList[oldItemPosition] == newList[newItemPosition]
+            }
+
+            override fun getOldListSize() = oldList.size
+
+            override fun getNewListSize() = newList.size
+        })
+
+        diff.dispatchUpdatesTo(this)
     }
 
 }

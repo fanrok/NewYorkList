@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.newyorklist.databinding.ReviewsListBinding
 import com.example.newyorklist.ui.fragments.base.BaseFragmentWithBinding
 import com.example.newyorklist.ui.fragments.reviewslist.adapter.RecyclerViewAdapter
+import com.example.newyorklist.ui.fragments.reviewslist.adapter.RecyclerViewAdapterState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -23,6 +24,7 @@ import kotlinx.coroutines.launch
 class ReviewsListFragment : BaseFragmentWithBinding<ReviewsListBinding>() {
 
     lateinit var recyclerViewAdapter: RecyclerViewAdapter
+    private val listForAdapter by lazy { mutableListOf<RecyclerViewAdapterState>() }
 
     @ExperimentalCoroutinesApi
     @FlowPreview
@@ -59,13 +61,21 @@ class ReviewsListFragment : BaseFragmentWithBinding<ReviewsListBinding>() {
     private fun seeState(state: ReviewsListFragmentState) {
         when (state) {
             is ReviewsListFragmentState.Data -> {
-                recyclerViewAdapter.setList(state.list)
+                if (listForAdapter.last() is RecyclerViewAdapterState.Loading) {
+                    listForAdapter.dropLast(1)
+                }
+                state.list.forEach {
+                    listForAdapter.add(RecyclerViewAdapterState.Item(it))
+                }
+                recyclerViewAdapter.setList(listForAdapter)
             }
             is ReviewsListFragmentState.Empty -> {
-                setText("Empty")
+                listForAdapter.clear()
+                recyclerViewAdapter.setList(listForAdapter)
             }
             is ReviewsListFragmentState.Loading -> {
-                setText("Loading")
+                listForAdapter.add(RecyclerViewAdapterState.Loading)
+                recyclerViewAdapter.setList(listForAdapter)
             }
         }
     }
