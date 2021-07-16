@@ -13,7 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.newyorklist.databinding.ReviewsListBinding
 import com.example.newyorklist.ui.fragments.base.BaseFragmentWithBinding
 import com.example.newyorklist.ui.fragments.reviewslist.adapter.RecyclerViewAdapter
-import com.example.newyorklist.ui.fragments.reviewslist.adapter.RecyclerViewAdapterState
+import com.example.newyorklist.ui.fragments.reviewslist.adapter.RecyclerViewAdapterItemType
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 class ReviewsListFragment : BaseFragmentWithBinding<ReviewsListBinding>() {
 
     lateinit var recyclerViewAdapter: RecyclerViewAdapter
-    private val listForAdapter by lazy { mutableListOf<RecyclerViewAdapterState>() }
+    private val listForAdapter by lazy { mutableListOf<RecyclerViewAdapterItemType>() }
 
     @ExperimentalCoroutinesApi
     @FlowPreview
@@ -61,11 +61,11 @@ class ReviewsListFragment : BaseFragmentWithBinding<ReviewsListBinding>() {
     private fun seeState(state: ReviewsListFragmentState) {
         when (state) {
             is ReviewsListFragmentState.Data -> {
-                if (listForAdapter.last() is RecyclerViewAdapterState.Loading) {
+                if (listForAdapter.last() is RecyclerViewAdapterItemType.Loading) {
                     listForAdapter.removeLast()
                 }
                 state.list.forEach {
-                    listForAdapter.add(RecyclerViewAdapterState.Item(it))
+                    listForAdapter.add(RecyclerViewAdapterItemType.Item(it))
                 }
                 recyclerViewAdapter.setList(listForAdapter)
             }
@@ -74,7 +74,7 @@ class ReviewsListFragment : BaseFragmentWithBinding<ReviewsListBinding>() {
                 recyclerViewAdapter.setList(listForAdapter)
             }
             is ReviewsListFragmentState.Loading -> {
-                listForAdapter.add(RecyclerViewAdapterState.Loading)
+                listForAdapter.add(RecyclerViewAdapterItemType.Loading)
                 recyclerViewAdapter.setList(listForAdapter)
             }
         }

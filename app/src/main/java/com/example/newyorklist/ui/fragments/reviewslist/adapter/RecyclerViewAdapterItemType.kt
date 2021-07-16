@@ -5,7 +5,7 @@ import com.example.newyorklist.domain.repositories.models.Review
 /**
  * @author Dmitriy Larin
  */
-sealed class RecyclerViewAdapterState {
-    object Loading : RecyclerViewAdapterState()
-    class Item(val review: Review) : RecyclerViewAdapterState()
+sealed class RecyclerViewAdapterItemType {
+    object Loading : RecyclerViewAdapterItemType()
+    class Item(val review: Review) : RecyclerViewAdapterItemType()
 }

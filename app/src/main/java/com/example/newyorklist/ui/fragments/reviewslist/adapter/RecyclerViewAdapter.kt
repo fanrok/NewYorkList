@@ -25,13 +25,14 @@ class RecyclerViewAdapter(
     }
 
 
-    private var mItemList: List<RecyclerViewAdapterState> = listOf()
+    private var mItemList: MutableList<RecyclerViewAdapterItemType> = mutableListOf()
 
-    fun setList(list: List<RecyclerViewAdapterState>) {
-        val oldList = mItemList
-        mItemList = list
-        notifyChanges(oldList, list)
-        notifyDataSetChanged()
+    fun setList(list: List<RecyclerViewAdapterItemType>) {
+        val diffCallback = ReviewDiffCallback(mItemList, list)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+        mItemList.clear()
+        mItemList.addAll(list)
+        diffResult.dispatchUpdatesTo(this)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -51,7 +52,7 @@ class RecyclerViewAdapter(
             scroll()
         }
         if (viewHolder is ItemViewHolder) {
-            viewHolder.bind(mItemList[position] as RecyclerViewAdapterState.Item, click)
+            viewHolder.bind(mItemList[position] as RecyclerViewAdapterItemType.Item, click)
         } else if (viewHolder is LoadingViewHolder) {
             viewHolder.bind()
         }
@@ -63,15 +64,15 @@ class RecyclerViewAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return when (mItemList[position]) {
-            is RecyclerViewAdapterState.Loading -> VIEW_TYPE_LOADING
-            is RecyclerViewAdapterState.Item -> VIEW_TYPE_ITEM
+            is RecyclerViewAdapterItemType.Loading -> VIEW_TYPE_LOADING
+            is RecyclerViewAdapterItemType.Item -> VIEW_TYPE_ITEM
         }
     }
 
     private class ItemViewHolder(bind: ItemRowBinding) : ViewHolder(bind.root) {
         private var binding: ItemRowBinding = bind
 
-        fun bind(review: RecyclerViewAdapterState.Item, click: (name: String) -> Unit) {
+        fun bind(review: RecyclerViewAdapterItemType.Item, click: (name: String) -> Unit) {
             binding.name.text = review.review.name
             if (review.review.img.isNotEmpty()) {
                 Picasso.get().load(review.review.img).into(binding.imageView)
@@ -84,35 +85,6 @@ class RecyclerViewAdapter(
 
     private class LoadingViewHolder(bind: ItemLoadingBinding) : ViewHolder(bind.root) {
         fun bind() {}
-    }
-
-    private fun notifyChanges(
-        oldList: List<RecyclerViewAdapterState>,
-        newList: List<RecyclerViewAdapterState>
-    ) {
-
-        val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-
-            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                if (oldList[oldItemPosition] is RecyclerViewAdapterState.Loading && newList[newItemPosition] is RecyclerViewAdapterState.Loading) return true
-                if (oldList[oldItemPosition] is RecyclerViewAdapterState.Item && newList[newItemPosition] is RecyclerViewAdapterState.Loading) return false
-                if (oldList[oldItemPosition] is RecyclerViewAdapterState.Loading && newList[newItemPosition] is RecyclerViewAdapterState.Item) return false
-                val oldP = oldList[oldItemPosition] as RecyclerViewAdapterState.Item
-                val newP = newList[newItemPosition] as RecyclerViewAdapterState.Item
-                if (oldP.review.name == newP.review.name) return true
-                return false
-            }
-
-            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                return oldList[oldItemPosition] == newList[newItemPosition]
-            }
-
-            override fun getOldListSize() = oldList.size
-
-            override fun getNewListSize() = newList.size
-        })
-//TODO починить diff util
-        diff.dispatchUpdatesTo(this)
     }
 
 }
