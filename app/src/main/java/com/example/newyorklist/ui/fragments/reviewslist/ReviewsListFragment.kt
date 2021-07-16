@@ -62,7 +62,7 @@ class ReviewsListFragment : BaseFragmentWithBinding<ReviewsListBinding>() {
         when (state) {
             is ReviewsListFragmentState.Data -> {
                 if (listForAdapter.last() is RecyclerViewAdapterState.Loading) {
-                    listForAdapter.dropLast(1)
+                    listForAdapter.removeLast()
                 }
                 state.list.forEach {
                     listForAdapter.add(RecyclerViewAdapterState.Item(it))

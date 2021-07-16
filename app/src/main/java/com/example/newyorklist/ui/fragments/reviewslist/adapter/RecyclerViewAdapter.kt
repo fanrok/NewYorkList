@@ -28,7 +28,10 @@ class RecyclerViewAdapter(
     private var mItemList: List<RecyclerViewAdapterState> = listOf()
 
     fun setList(list: List<RecyclerViewAdapterState>) {
-        notifyChanges(mItemList, list)
+        val oldList = mItemList
+        mItemList = list
+        notifyChanges(oldList, list)
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -108,7 +111,7 @@ class RecyclerViewAdapter(
 
             override fun getNewListSize() = newList.size
         })
-
+//TODO починить diff util
         diff.dispatchUpdatesTo(this)
     }
 
