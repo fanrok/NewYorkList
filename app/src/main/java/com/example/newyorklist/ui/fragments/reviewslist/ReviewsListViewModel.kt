@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
+import kotlin.random.Random
 
 @FlowPreview
 @ExperimentalCoroutinesApi
@@ -44,6 +45,7 @@ class ReviewsListViewModel @Inject constructor(private val reviewRepository: Rev
                         Log.d("RLVM", it)
                         if (it.length >= MIN_QUERY_LENGTH) {
                             _listReviews.value = ReviewsListFragmentState.Loading
+                            delay(Random.nextLong(0, 5000))//задержка запроса по тз
                             val data = reviewRepository.getReviews(it)
                             if (data.isEmpty()) {
                                 _listReviews.value = ReviewsListFragmentState.Empty
@@ -61,6 +63,7 @@ class ReviewsListViewModel @Inject constructor(private val reviewRepository: Rev
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 _listReviews.value = ReviewsListFragmentState.Loading
+                delay(Random.nextLong(0, 5000))//задержка запроса по тз
                 val data = reviewRepository.giveMoreReviews()
                 if (data.isEmpty()) {
                     _listReviews.value = ReviewsListFragmentState.Empty
