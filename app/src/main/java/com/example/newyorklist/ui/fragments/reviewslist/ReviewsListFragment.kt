@@ -85,8 +85,8 @@ class ReviewsListFragment : BaseFragmentWithBinding<ReviewsListBinding>() {
     @FlowPreview
     private fun initAdapter() {
         recyclerViewAdapter = RecyclerViewAdapter(
-            ::scrollListener,
-            ::clickListener
+            this::scrollListener,
+            this::clickListener
         )
         binding.recyclerView.adapter = recyclerViewAdapter
     }

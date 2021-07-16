@@ -9,6 +9,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class EntryPointActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.entry_point)
     }
