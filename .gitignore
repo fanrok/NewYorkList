@@ -12,3 +12,6 @@
 /captures
 .externalNativeBuild
 .cxx
+.idea/modules/RoboSwag/
+.idea/*
+app/release/
