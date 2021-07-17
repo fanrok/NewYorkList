@@ -61,23 +61,22 @@ class ReviewsListFragment : BaseFragmentWithBinding<ReviewsListBinding>() {
     private fun seeState(state: ReviewsListFragmentState) {
         when (state) {
             is ReviewsListFragmentState.Data -> {
-                if (listForAdapter.last() is RecyclerViewAdapterItemType.Loading) {
-                    listForAdapter.removeLast()
-                }
+                listForAdapter.clear()
                 state.list.forEach {
                     listForAdapter.add(RecyclerViewAdapterItemType.Item(it))
                 }
-                recyclerViewAdapter.setList(listForAdapter)
             }
             is ReviewsListFragmentState.Empty -> {
                 listForAdapter.clear()
-                recyclerViewAdapter.setList(listForAdapter)
             }
-            is ReviewsListFragmentState.Loading -> {
+            is ReviewsListFragmentState.LoadingNew -> {
                 listForAdapter.add(RecyclerViewAdapterItemType.Loading)
-                recyclerViewAdapter.setList(listForAdapter)
+            }
+            is ReviewsListFragmentState.LoadingMore -> {
+                listForAdapter.add(RecyclerViewAdapterItemType.Loading)
             }
         }
+        recyclerViewAdapter.setList(listForAdapter)
     }
 
 

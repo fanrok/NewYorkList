@@ -6,7 +6,9 @@ import com.example.newyorklist.data.db.dao.ReviewDao
 import com.example.newyorklist.data.db.entityes.ReviewEntity
 import com.example.newyorklist.domain.mappers.SimpleMapper
 import com.example.newyorklist.domain.repositories.models.Review
+import kotlinx.coroutines.delay
 import javax.inject.Inject
+import kotlin.random.Random
 
 /**
  * Review repository impl
@@ -32,6 +34,7 @@ class ReviewRepositoryImpl @Inject constructor(
      * @return - список отзывов
      */
     override suspend fun getReviews(query: String): List<Review> {
+        delay(Random.nextLong(0, 5000))//задержка запроса по тз
         list.clear()
         offset = 0
         searchQuery = query
@@ -58,6 +61,7 @@ class ReviewRepositoryImpl @Inject constructor(
      * @return список отзывов
      */
     override suspend fun giveMoreReviews(): List<Review> {
+        delay(Random.nextLong(0, 5000))//задержка запроса по тз
         if (!hasMore) return list
         offset += 20
         apiHelper.getReviews(searchQuery, offset).let {
