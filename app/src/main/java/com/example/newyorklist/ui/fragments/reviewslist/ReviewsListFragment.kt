@@ -67,6 +67,7 @@ class ReviewsListFragment : BaseFragmentWithBinding<ReviewsListBinding>() {
                 }
             }
             is ReviewsListFragmentState.Empty -> {
+                Toast.makeText(context, "Больше данных нет", Toast.LENGTH_LONG).show()
                 listForAdapter.clear()
             }
             is ReviewsListFragmentState.LoadingNew -> {
@@ -93,13 +94,11 @@ class ReviewsListFragment : BaseFragmentWithBinding<ReviewsListBinding>() {
     @ExperimentalCoroutinesApi
     @FlowPreview
     private fun scrollListener() {
-        Toast.makeText(context, "А вы таки домотали до конца", Toast.LENGTH_LONG).show()
         Log.d("TAGS", "А вы таки домотали до конца")
         viewModel.needMoreReviews()
     }
 
     private fun clickListener(name: String) {
-        Toast.makeText(context, "Ты кликнул на $name", Toast.LENGTH_LONG).show()
         Log.d("TAGS", "Ты кликнул на $name")
         val action =
             ReviewsListFragmentDirections.actionNewsListFragmentToReviewDetailFragment(name)

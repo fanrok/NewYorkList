@@ -48,7 +48,7 @@ class RecyclerViewAdapter(
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        if (position == mItemList.size - 1) {
+        if (position == mItemList.size - 1 && mItemList.size > 2) {
             scroll()
         }
         if (viewHolder is ItemViewHolder) {
