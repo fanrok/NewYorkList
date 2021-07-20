@@ -19,5 +19,5 @@ interface ReviewRepository {
      * @param name - имя заголовка. Бек не присылает уникальный id, поэтому выборку делаю по имени
      * @return отзыв
      */
-    suspend fun getRewiewByName(name: String): Review
+    suspend fun getReviewByName(name: String): Review
 }

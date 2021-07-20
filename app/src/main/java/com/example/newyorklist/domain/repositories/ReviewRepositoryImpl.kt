@@ -5,6 +5,7 @@ import com.example.newyorklist.data.api.models.Result
 import com.example.newyorklist.data.db.dao.ReviewDao
 import com.example.newyorklist.data.db.entityes.ReviewEntity
 import com.example.newyorklist.domain.mappers.SimpleMapper
+import com.example.newyorklist.domain.repositories.exceptions.ReviewsException
 import com.example.newyorklist.domain.repositories.models.Review
 import kotlinx.coroutines.delay
 import javax.inject.Inject
@@ -15,6 +16,7 @@ import kotlin.random.Random
  *
  * @property reviewDao - дао для работы с бд
  * @property apiHelper - для работы с апи
+ * @property mapper - для маппинга данных в ui модель
  * @constructor Create empty Review repository impl
  */
 class ReviewRepositoryImpl @Inject constructor(
@@ -24,7 +26,7 @@ class ReviewRepositoryImpl @Inject constructor(
 ) : ReviewRepository {
     private var offset = 0
     private var searchQuery = ""
-    private var hasMore = true
+    private var hasMore = false //флаг, что у сервера есть еще данные
     private val list = mutableListOf<Review>()
 
     /**
@@ -61,8 +63,8 @@ class ReviewRepositoryImpl @Inject constructor(
      * @return список отзывов
      */
     override suspend fun giveMoreReviews(): List<Review> {
+        if (!hasMore) throw ReviewsException("Больше данных нет")
         delay(Random.nextLong(0, 5000))//задержка запроса по тз
-        if (!hasMore) return list
         offset += 20
         apiHelper.getReviews(searchQuery, offset).let {
             if (it.isSuccessful) {
@@ -85,7 +87,7 @@ class ReviewRepositoryImpl @Inject constructor(
      * @param name - имя, по которому будет осуществел поиск отзыва
      * @return - возвращает отзыв
      */
-    override suspend fun getRewiewByName(name: String): Review {
+    override suspend fun getReviewByName(name: String): Review {
         val review = reviewDao.getByName(name)
         return Review(review.id, review.name, review.date, review.text, review.img)
     }

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.newyorklist.R
 import com.example.newyorklist.databinding.ReviewDetailBinding
 import com.example.newyorklist.domain.repositories.models.Review
 import com.example.newyorklist.ui.fragments.base.BaseFragmentWithBinding
@@ -54,9 +55,11 @@ class ReviewDetailFragment : BaseFragmentWithBinding<ReviewDetailBinding>() {
         binding.detailText.text = review.text
         binding.name.text = review.name
         binding.date.text = review.date
-        if (review.img.isNotEmpty()) {
-            Picasso.get().load(review.img).into(binding.detailImage)
-        }
+        Picasso
+            .get()
+            .load(review.img)
+            .placeholder(R.drawable.ic_launcher_background)
+            .into(binding.detailImage)
 
         binding.goBack.setOnClickListener {
             findNavController().popBackStack()

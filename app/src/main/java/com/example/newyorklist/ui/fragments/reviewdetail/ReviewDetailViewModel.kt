@@ -26,7 +26,7 @@ class ReviewDetailViewModel @Inject constructor(private val reviewRepository: Re
     fun loadReview(name: String) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                _review.value = reviewRepository.getRewiewByName(name)
+                _review.value = reviewRepository.getReviewByName(name)
             }
         }
     }

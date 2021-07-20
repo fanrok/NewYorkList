@@ -3,6 +3,7 @@ package com.example.newyorklist.ui.fragments.reviewslist
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.newyorklist.domain.repositories.ReviewRepository
+import com.example.newyorklist.domain.repositories.exceptions.ReviewsException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -34,7 +35,7 @@ class ReviewsListViewModel @Inject constructor(private val reviewRepository: Rev
             withContext(Dispatchers.IO) {
                 _searchQuery
                     .map { query ->
-                        _listReviews.value = ReviewsListFragmentState.LoadingMore
+                        _listReviews.value = ReviewsListFragmentState.LoadingNew
                         return@map query
                     }
                     .debounce(SEARCH_DELAY_MS)
@@ -57,18 +58,27 @@ class ReviewsListViewModel @Inject constructor(private val reviewRepository: Rev
         }
     }
 
+    /**
+     * Need more reviews
+     * Метод осуществляет подгррузку новых данных
+     */
     fun needMoreReviews() {
         if (_listReviews.value == ReviewsListFragmentState.LoadingMore) return
         if (_listReviews.value == ReviewsListFragmentState.LoadingNew) return
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 _listReviews.value = ReviewsListFragmentState.LoadingMore
-                val data = reviewRepository.giveMoreReviews()
-                if (data.isEmpty()) {
-                    _listReviews.value = ReviewsListFragmentState.Empty
-                } else {
-                    _listReviews.value = ReviewsListFragmentState.Data(data)
+                try {
+                    val data = reviewRepository.giveMoreReviews()
+                    if (data.isEmpty()) {
+                        _listReviews.value = ReviewsListFragmentState.NoMoreData
+                    } else {
+                        _listReviews.value = ReviewsListFragmentState.Data(data)
+                    }
+                } catch (e: ReviewsException) {
+                    _listReviews.value = ReviewsListFragmentState.NoMoreData
                 }
+
             }
         }
     }

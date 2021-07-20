@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.example.newyorklist.R
 import com.example.newyorklist.databinding.ItemLoadingBinding
 import com.example.newyorklist.databinding.ItemRowBinding
 import com.squareup.picasso.Picasso
@@ -16,8 +17,7 @@ import com.squareup.picasso.Picasso
 class RecyclerViewAdapter(
     private val scroll: () -> Unit,
     private val click: (name: String) -> Unit
-) :
-    RecyclerView.Adapter<ViewHolder>() {
+) : RecyclerView.Adapter<ViewHolder>() {
 
     companion object {
         private const val VIEW_TYPE_ITEM = 0
@@ -74,9 +74,13 @@ class RecyclerViewAdapter(
 
         fun bind(review: RecyclerViewAdapterItemType.Item, click: (name: String) -> Unit) {
             binding.name.text = review.review.name
-            if (review.review.img.isNotEmpty()) {
-                Picasso.get().load(review.review.img).into(binding.imageView)
-            }
+
+            Picasso
+                .get()
+                .load(review.review.img)
+                .placeholder(R.drawable.ic_launcher_background)
+                .into(binding.imageView)
+
             binding.seeMore.setOnClickListener {
                 click(review.review.name)
             }

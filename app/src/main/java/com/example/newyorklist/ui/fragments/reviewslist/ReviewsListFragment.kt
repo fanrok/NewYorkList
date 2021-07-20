@@ -65,16 +65,24 @@ class ReviewsListFragment : BaseFragmentWithBinding<ReviewsListBinding>() {
                 state.list.forEach {
                     listForAdapter.add(RecyclerViewAdapterItemType.Item(it))
                 }
+                Log.d("STATE", "data")
             }
             is ReviewsListFragmentState.Empty -> {
-                Toast.makeText(context, "Больше данных нет", Toast.LENGTH_LONG).show()
                 listForAdapter.clear()
+                Log.d("STATE", "empty")
             }
             is ReviewsListFragmentState.LoadingNew -> {
+                listForAdapter.clear()
                 listForAdapter.add(RecyclerViewAdapterItemType.Loading)
+                Log.d("STATE", "new")
             }
             is ReviewsListFragmentState.LoadingMore -> {
                 listForAdapter.add(RecyclerViewAdapterItemType.Loading)
+                Log.d("STATE", "more")
+            }
+            is ReviewsListFragmentState.NoMoreData -> {
+                Toast.makeText(context, "Данных больше нет", Toast.LENGTH_SHORT).show()
+                Log.d("STATE", "no more")
             }
         }
         recyclerViewAdapter.setList(listForAdapter)
