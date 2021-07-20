@@ -8,4 +8,5 @@
     <string name="seeMore">ПОДРОБНЕЕ</string>
     <string name="newslistfragment">NewsListFragment</string>
     <string name="search">Поиск</string>
+    <string name="open_review">Открыть статью в браузере</string>
 </resources>

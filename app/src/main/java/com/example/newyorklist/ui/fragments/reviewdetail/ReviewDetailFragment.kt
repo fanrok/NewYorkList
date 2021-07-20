@@ -1,6 +1,7 @@
 package com.example.newyorklist.ui.fragments.reviewdetail
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,13 +16,14 @@ import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 
+
 /**
  * @author Dmitriy Larin
  */
 @AndroidEntryPoint
 class ReviewDetailFragment : BaseFragmentWithBinding<ReviewDetailBinding>() {
 
-    private lateinit var nameOfReview: String
+    private var id: Long? = null
     private val viewModel by viewModels<ReviewDetailViewModel>()
 
     override fun onCreateView(
@@ -30,16 +32,16 @@ class ReviewDetailFragment : BaseFragmentWithBinding<ReviewDetailBinding>() {
     ): View {
         _binding = ReviewDetailBinding.inflate(inflater, container, false)
         if (arguments != null) {
-            nameOfReview =
-                ReviewDetailFragmentArgs.fromBundle(requireArguments()).nameOfReview.toString()
-            if (nameOfReview.isBlank() || nameOfReview.isEmpty()) {
+            id =
+                ReviewDetailFragmentArgs.fromBundle(requireArguments()).id
+            if (id == null) {
                 findNavController().popBackStack()
             }
         } else {
             findNavController().popBackStack()
         }
 
-        viewModel.loadReview(nameOfReview)
+        viewModel.loadReview(id!!)
 
         lifecycleScope.launchWhenStarted {
             viewModel.review.collect {
@@ -51,15 +53,18 @@ class ReviewDetailFragment : BaseFragmentWithBinding<ReviewDetailBinding>() {
     }
 
     private fun setView(review: Review) {
-
+        Log.d("DETAIL", review.toString())
         binding.detailText.text = review.text
         binding.name.text = review.name
         binding.date.text = review.date
-        Picasso
-            .get()
-            .load(review.img)
-            .placeholder(R.drawable.ic_launcher_background)
-            .into(binding.detailImage)
+
+        if (review.link.isNotBlank()) {
+            Picasso
+                .get()
+                .load(review.img)
+                .placeholder(R.drawable.ic_launcher_background)
+                .into(binding.detailImage)
+        }
 
         binding.goBack.setOnClickListener {
             findNavController().popBackStack()

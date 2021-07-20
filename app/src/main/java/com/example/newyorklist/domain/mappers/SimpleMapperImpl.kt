@@ -16,7 +16,8 @@ class SimpleMapperImpl @Inject constructor() : SimpleMapper {
             name = result.display_title,
             date = result.publication_date,
             text = result.summary_short,
-            img = result.multimedia?.src ?: ""
+            img = result.multimedia?.src ?: "",
+            link = result.link.url
         )
     }
 }

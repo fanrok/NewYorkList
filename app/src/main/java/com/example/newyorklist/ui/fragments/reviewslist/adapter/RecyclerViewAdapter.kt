@@ -16,7 +16,7 @@ import com.squareup.picasso.Picasso
  */
 class RecyclerViewAdapter(
     private val scroll: () -> Unit,
-    private val click: (name: String) -> Unit
+    private val click: (name: Long) -> Unit
 ) : RecyclerView.Adapter<ViewHolder>() {
 
     companion object {
@@ -72,17 +72,19 @@ class RecyclerViewAdapter(
     private class ItemViewHolder(bind: ItemRowBinding) : ViewHolder(bind.root) {
         private var binding: ItemRowBinding = bind
 
-        fun bind(review: RecyclerViewAdapterItemType.Item, click: (name: String) -> Unit) {
+        fun bind(review: RecyclerViewAdapterItemType.Item, click: (name: Long) -> Unit) {
             binding.name.text = review.review.name
 
-            Picasso
-                .get()
-                .load(review.review.img)
-                .placeholder(R.drawable.ic_launcher_background)
-                .into(binding.imageView)
+            if (review.review.img.isNotBlank()) {
+                Picasso
+                    .get()
+                    .load(review.review.img)
+                    .placeholder(R.drawable.ic_launcher_background)
+                    .into(binding.imageView)
+            }
 
             binding.seeMore.setOnClickListener {
-                click(review.review.name)
+                click(review.review.id)
             }
         }
     }

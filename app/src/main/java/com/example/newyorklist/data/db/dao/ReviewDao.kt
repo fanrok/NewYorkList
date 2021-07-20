@@ -18,7 +18,10 @@ interface ReviewDao {
     @Query("SELECT * FROM reviews WHERE name = :name")
     fun getByName(name: String): ReviewEntity
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(employee: ReviewEntity)
+    @Query("SELECT * FROM reviews WHERE id = :id")
+    fun getById(id: Long): ReviewEntity
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(employee: ReviewEntity): Long
 
 }

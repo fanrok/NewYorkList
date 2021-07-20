@@ -20,4 +20,10 @@ interface ReviewRepository {
      * @return отзыв
      */
     suspend fun getReviewByName(name: String): Review
+
+    /**
+     * @param id - id отзыва, после сохранения в бд
+     * @return отзыв
+     */
+    suspend fun getReviewById(id: Long): Review
 }

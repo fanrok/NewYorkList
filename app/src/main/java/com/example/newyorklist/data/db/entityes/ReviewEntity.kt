@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+
 /**
  * @author Dmitriy Larin
  * Review entity
@@ -19,8 +20,10 @@ data class ReviewEntity(
     @ColumnInfo(name = "name") var name: String,
     @ColumnInfo(name = "date") var date: String,
     @ColumnInfo(name = "text") var text: String,
-    @ColumnInfo(name = "img") var img: String
+    @ColumnInfo(name = "img") var img: String,
+    @ColumnInfo(name = "link") var link: String
 ) {
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0
 }
+

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.newyorklist.data.db.AppDatabase
 import com.example.newyorklist.data.db.dao.ReviewDao
+import com.example.newyorklist.data.db.migrations.Migration
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,6 +33,8 @@ class DatabaseModule {
             appContext,
             AppDatabase::class.java,
             "NewYorkBD"
-        ).build()
+        )
+            .addMigrations(Migration.MIGRATION_1_2)
+            .build()
     }
 }

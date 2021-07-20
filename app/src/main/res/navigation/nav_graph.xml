@@ -17,8 +17,7 @@
         android:name="com.example.newyorklist.ui.fragments.reviewdetail.ReviewDetailFragment"
         android:label="ReviewDetailFragment">
         <argument
-            android:name="nameOfReview"
-            app:argType="string"
-            app:nullable="true" />
+            android:name="id"
+            app:argType="long" />
     </fragment>
 </navigation>

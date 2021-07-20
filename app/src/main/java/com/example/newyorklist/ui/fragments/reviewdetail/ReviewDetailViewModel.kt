@@ -23,10 +23,10 @@ class ReviewDetailViewModel @Inject constructor(private val reviewRepository: Re
         MutableStateFlow<Review>(Review(0, "", "", "", ""))
     val review: StateFlow<Review> = _review.asStateFlow()
 
-    fun loadReview(name: String) {
+    fun loadReview(id: Long) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                _review.value = reviewRepository.getReviewByName(name)
+                _review.value = reviewRepository.getReviewById(id)
             }
         }
     }

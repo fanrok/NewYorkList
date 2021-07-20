@@ -11,7 +11,8 @@ import com.example.newyorklist.data.db.entityes.ReviewEntity
  *
  * @constructor Create empty App database
  */
-@Database(entities = [ReviewEntity::class], version = 1)
+@Database(entities = [ReviewEntity::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
+
     abstract fun reviewDao(): ReviewDao
 }

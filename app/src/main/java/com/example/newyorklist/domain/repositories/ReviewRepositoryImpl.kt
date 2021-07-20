@@ -47,8 +47,10 @@ class ReviewRepositoryImpl @Inject constructor(
                     if (body.status != "OK") return listOf()
                     if (body.num_results == 0) return listOf()
                     body.results.forEach { item ->
-                        list.add(mapper.resultToReview(item))
-                        insertToDataBase(item)
+                        val id = insertToDataBase(item)
+                        val review = mapper.resultToReview(item)
+                        review.id = id
+                        list.add(review)
                     }
                     return list
                 }
@@ -71,8 +73,10 @@ class ReviewRepositoryImpl @Inject constructor(
                 it.body()?.let { body ->
                     if (body.num_results == 0) return list
                     body.results.forEach { item ->
-                        list.add(mapper.resultToReview(item))
-                        insertToDataBase(item)
+                        val id = insertToDataBase(item)
+                        val review = mapper.resultToReview(item)
+                        review.id = id
+                        list.add(review)
                     }
                     return list
                 }
@@ -92,13 +96,19 @@ class ReviewRepositoryImpl @Inject constructor(
         return Review(review.id, review.name, review.date, review.text, review.img)
     }
 
-    private fun insertToDataBase(item: Result) {
-        reviewDao.insert(
+    override suspend fun getReviewById(id: Long): Review {
+        val review = reviewDao.getById(id)
+        return Review(review.id, review.name, review.date, review.text, review.img)
+    }
+
+    private fun insertToDataBase(item: Result): Long {
+        return reviewDao.insert(
             ReviewEntity(
                 name = item.display_title,
                 date = item.publication_date,
                 text = item.summary_short,
-                img = item.multimedia?.src ?: ""
+                img = item.multimedia?.src ?: "",
+                link = item.link.url
             )
         )
     }

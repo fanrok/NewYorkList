@@ -106,10 +106,10 @@ class ReviewsListFragment : BaseFragmentWithBinding<ReviewsListBinding>() {
         viewModel.needMoreReviews()
     }
 
-    private fun clickListener(name: String) {
-        Log.d("TAGS", "Ты кликнул на $name")
+    private fun clickListener(id: Long) {
+        Log.d("TAGS", "Ты кликнул на $id")
         val action =
-            ReviewsListFragmentDirections.actionNewsListFragmentToReviewDetailFragment(name)
+            ReviewsListFragmentDirections.actionNewsListFragmentToReviewDetailFragment(id)
         findNavController().navigate(action)
     }
 

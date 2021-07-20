@@ -35,7 +35,9 @@ class ReviewsListViewModel @Inject constructor(private val reviewRepository: Rev
             withContext(Dispatchers.IO) {
                 _searchQuery
                     .map { query ->
-                        _listReviews.value = ReviewsListFragmentState.LoadingNew
+                        if (query.length >= MIN_QUERY_LENGTH) {
+                            _listReviews.value = ReviewsListFragmentState.LoadingNew
+                        }
                         return@map query
                     }
                     .debounce(SEARCH_DELAY_MS)
